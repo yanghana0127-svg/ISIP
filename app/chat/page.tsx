@@ -118,19 +118,26 @@ function ModeCard({
 }) {
   return (
     <div
-      className="flex h-full flex-col gap-3 rounded-2xl border border-white/15 p-5 backdrop-blur"
+      className="flex h-full flex-col rounded-2xl border border-white/15 p-5 backdrop-blur"
       style={{ background: "rgba(255,255,255,0.05)" }}
     >
-      <div className="flex items-center gap-2">
-        <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/12 text-white">
+      {/* row 1: icon + tag — fixed height */}
+      <div className="flex h-9 items-center gap-2">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/12 text-white">
           {icon}
         </span>
         <span className="text-xs font-bold uppercase tracking-wider text-white/65">
           {tag}
         </span>
       </div>
-      <div className="text-lg font-bold text-white">{title}</div>
-      <div className="text-sm leading-relaxed text-white/70">{desc}</div>
+      {/* row 2: title — fixed line height block */}
+      <div className="mt-3 text-lg font-bold leading-tight text-white">
+        {title}
+      </div>
+      {/* row 3: desc — fills remaining */}
+      <div className="mt-2 flex-1 text-sm leading-relaxed text-white/70">
+        {desc}
+      </div>
     </div>
   );
 }
