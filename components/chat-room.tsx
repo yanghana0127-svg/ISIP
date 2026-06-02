@@ -194,18 +194,91 @@ export function ChatRoom({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-      {/* Main column: messages + composer */}
-      <div className="flex flex-col gap-4">
-        {/* messages scroll area — dark glass for /chat dark bg */}
+      {/* Main column: composer pinned on top, messages scroll below — one card */}
+      <div
+        className="flex flex-col overflow-hidden rounded-2xl border border-white/15"
+        style={{
+          background: "rgba(255,255,255,0.04)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+        }}
+      >
+        {/* Composer — always visible at the top, no need to scroll down */}
+        <form onSubmit={onSubmit} className="border-b border-white/10 p-4">
+          <div
+            className="relative overflow-hidden rounded-2xl border border-white/25 p-4 transition focus-within:border-white/45"
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              boxShadow:
+                "inset 0 1px 0 rgba(255,255,255,0.12), 0 8px 32px rgba(0,0,0,0.18)",
+            }}
+          >
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  void send(input);
+                }
+              }}
+              placeholder="Ask anything about global FDI screening…"
+              rows={2}
+              className="block min-h-[52px] w-full resize-none border-0 bg-transparent text-base text-white placeholder:text-white/40 outline-none"
+            />
+
+            <div className="mt-3 flex items-center gap-3">
+              {/* Unified pill mode bar — Tavily style */}
+              <div
+                className="inline-flex items-center gap-0.5 rounded-full border border-white/15 p-1 backdrop-blur"
+                style={{ background: "rgba(255,255,255,0.08)" }}
+              >
+                {MODES.map((m) => {
+                  const active = mode === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setMode(m.id)}
+                      title={m.hint}
+                      className={
+                        active
+                          ? "inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-navy-dark shadow-sm transition"
+                          : "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-white/65 transition hover:text-white"
+                      }
+                    >
+                      {m.icon}
+                      {m.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <span className="ml-auto hidden truncate text-[11px] text-white/45 sm:inline">
+                {MODES.find((m) => m.id === mode)?.hint}
+              </span>
+
+              <button
+                type="submit"
+                disabled={loading || !input.trim()}
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/95 text-navy-dark shadow-md transition hover:scale-105 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Send"
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ArrowUp className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          </div>
+        </form>
+
+        {/* messages scroll area below the composer */}
         <div
           ref={scrollRef}
-          className="min-h-[480px] flex-1 space-y-4 overflow-y-auto rounded-2xl border border-white/15 p-5"
-          style={{
-            background: "rgba(255,255,255,0.04)",
-            backdropFilter: "blur(14px)",
-            WebkitBackdropFilter: "blur(14px)",
-            maxHeight: "62vh",
-          }}
+          className="min-h-[420px] flex-1 space-y-4 overflow-y-auto p-5"
+          style={{ maxHeight: "60vh" }}
         >
           {messages.length === 0 && (
             <div className="space-y-5">
@@ -253,81 +326,6 @@ export function ChatRoom({
             />
           ))}
         </div>
-
-        {/* Composer — Tavily-style transparent glass card */}
-        <form onSubmit={onSubmit}>
-          <div
-            className="relative overflow-hidden rounded-3xl border border-white/25 p-5 transition focus-within:border-white/45"
-            style={{
-              background: "rgba(255,255,255,0.06)",
-              backdropFilter: "blur(18px)",
-              WebkitBackdropFilter: "blur(18px)",
-              boxShadow:
-                "inset 0 1px 0 rgba(255,255,255,0.12), 0 8px 32px rgba(0,0,0,0.18)",
-            }}
-          >
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  void send(input);
-                }
-              }}
-              placeholder="Ask anything about global FDI screening…"
-              rows={2}
-              className="block min-h-[60px] w-full resize-none border-0 bg-transparent text-base text-white placeholder:text-white/40 outline-none"
-            />
-
-            <div className="mt-3 flex items-center gap-3">
-              {/* Unified pill mode bar — Tavily style */}
-              <div
-                className="inline-flex items-center gap-0.5 rounded-full border border-white/15 p-1 backdrop-blur"
-                style={{ background: "rgba(255,255,255,0.08)" }}
-              >
-                {MODES.map((m) => {
-                  const active = mode === m.id;
-                  return (
-                    <button
-                      key={m.id}
-                      type="button"
-                      onClick={() => setMode(m.id)}
-                      title={m.hint}
-                      className={
-                        active
-                          ? "inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-navy-dark shadow-sm transition"
-                          : "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-white/65 transition hover:text-white"
-                      }
-                    >
-                      {m.icon}
-                      {m.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading || !input.trim()}
-                className="ml-auto grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/95 text-navy-dark shadow-md transition hover:scale-105 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
-                aria-label="Send"
-              >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <ArrowUp className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-          </div>
-          <p className="mt-2 text-center text-[11px] text-white/45">
-            Press Enter to send · Shift+Enter for newline ·{" "}
-            <span className="font-semibold text-white/65">
-              {MODES.find((m) => m.id === mode)?.hint}
-            </span>
-          </p>
-        </form>
       </div>
 
       {/* Sidebar: sources — dark glass */}
@@ -383,7 +381,7 @@ function MessageBubble({
         style={{ background: "rgba(255,255,255,0.06)", backdropFilter: "blur(10px)" }}
       >
         {msg.content ? (
-          <CitationText
+          <Markdown
             text={msg.content}
             policy={msg.policySources ?? []}
             web={msg.webSources ?? []}
@@ -404,7 +402,174 @@ function MessageBubble({
   );
 }
 
-function CitationText({
+// ── Lightweight markdown renderer (headings / lists / bold / italic / code)
+//    that also turns [n] and [Wn] citation markers into clickable chips. ──
+
+type Block =
+  | { type: "heading"; level: number; text: string }
+  | { type: "ul"; items: string[] }
+  | { type: "ol"; items: string[] }
+  | { type: "hr" }
+  | { type: "p"; text: string };
+
+function parseBlocks(src: string): Block[] {
+  const blocks: Block[] = [];
+  let para: string[] = [];
+  let list: { type: "ul" | "ol"; items: string[] } | null = null;
+
+  const flushPara = () => {
+    if (para.length) {
+      blocks.push({ type: "p", text: para.join(" ") });
+      para = [];
+    }
+  };
+  const flushList = () => {
+    if (list) {
+      blocks.push(list);
+      list = null;
+    }
+  };
+
+  for (const raw of src.split("\n")) {
+    const line = raw.trim();
+    if (!line) {
+      flushPara();
+      flushList();
+      continue;
+    }
+    const heading = line.match(/^(#{1,4})\s+(.*)$/);
+    if (heading) {
+      flushPara();
+      flushList();
+      blocks.push({ type: "heading", level: heading[1].length, text: heading[2] });
+      continue;
+    }
+    if (/^(-{3,}|\*{3,}|_{3,})$/.test(line)) {
+      flushPara();
+      flushList();
+      blocks.push({ type: "hr" });
+      continue;
+    }
+    const ordered = line.match(/^\d+[.)]\s+(.*)$/);
+    if (ordered) {
+      flushPara();
+      if (!list || list.type !== "ol") {
+        flushList();
+        list = { type: "ol", items: [] };
+      }
+      list.items.push(ordered[1]);
+      continue;
+    }
+    const bullet = line.match(/^[-*+]\s+(.*)$/);
+    if (bullet) {
+      flushPara();
+      if (!list || list.type !== "ul") {
+        flushList();
+        list = { type: "ul", items: [] };
+      }
+      list.items.push(bullet[1]);
+      continue;
+    }
+    flushList();
+    para.push(line);
+  }
+  flushPara();
+  flushList();
+  return blocks;
+}
+
+function renderCitations(
+  text: string,
+  policy: PolicySource[],
+  web: WebSource[],
+  keyPrefix: string,
+): React.ReactNode[] {
+  const parts = text.split(/(\[(?:W\d+|\d+)\](?:\[(?:W\d+|\d+)\])*)/g);
+  return parts.map((part, i) => {
+    if (part && /^(\[(?:W?\d+)\])+$/.test(part)) {
+      const matches = part.match(/\[(W?\d+)\]/g) ?? [];
+      return (
+        <span key={`${keyPrefix}-${i}`} className="inline-flex flex-wrap gap-0.5">
+          {matches.map((m, j) => {
+            const tag = m.slice(1, -1);
+            if (tag.startsWith("W")) {
+              const n = parseInt(tag.slice(1), 10);
+              const src = web.find((s) => s.n === n);
+              if (!src) return <span key={j}>{m}</span>;
+              return (
+                <a
+                  key={j}
+                  href={src.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mx-0.5 inline-flex h-4 items-center gap-0.5 rounded bg-emerald-500/15 px-1 text-[10px] font-bold text-emerald-700 hover:bg-emerald-500/30"
+                  title={src.title}
+                >
+                  W{n}
+                </a>
+              );
+            }
+            const n = parseInt(tag, 10);
+            const src = policy.find((s) => s.n === n);
+            if (!src) return <span key={j}>{m}</span>;
+            return (
+              <Link
+                key={j}
+                href={`/policies/${src.policy_id}`}
+                className="mx-0.5 inline-flex h-4 w-4 items-center justify-center rounded bg-navy-soft/25 text-[10px] font-bold text-navy-mid hover:bg-navy-soft hover:text-white"
+                title={`${src.country} · ${src.title}`}
+              >
+                {n}
+              </Link>
+            );
+          })}
+        </span>
+      );
+    }
+    return <span key={`${keyPrefix}-${i}`}>{part}</span>;
+  });
+}
+
+function renderInline(
+  text: string,
+  policy: PolicySource[],
+  web: WebSource[],
+  keyPrefix: string,
+): React.ReactNode[] {
+  const tokens = text.split(/(\*\*[^*]+\*\*|`[^`]+`|\*[^*\n]+\*)/g);
+  const nodes: React.ReactNode[] = [];
+  tokens.forEach((tok, i) => {
+    if (!tok) return;
+    const k = `${keyPrefix}-${i}`;
+    if (tok.startsWith("**") && tok.endsWith("**") && tok.length > 4) {
+      nodes.push(
+        <strong key={k} className="font-bold text-white">
+          {renderCitations(tok.slice(2, -2), policy, web, k)}
+        </strong>,
+      );
+    } else if (tok.startsWith("`") && tok.endsWith("`") && tok.length > 2) {
+      nodes.push(
+        <code
+          key={k}
+          className="rounded bg-white/10 px-1 py-0.5 text-[0.85em] text-white"
+        >
+          {tok.slice(1, -1)}
+        </code>,
+      );
+    } else if (tok.startsWith("*") && tok.endsWith("*") && tok.length > 2) {
+      nodes.push(
+        <em key={k} className="italic">
+          {renderCitations(tok.slice(1, -1), policy, web, k)}
+        </em>,
+      );
+    } else {
+      nodes.push(...renderCitations(tok, policy, web, k));
+    }
+  });
+  return nodes;
+}
+
+function Markdown({
   text,
   policy,
   web,
@@ -413,54 +578,55 @@ function CitationText({
   policy: PolicySource[];
   web: WebSource[];
 }) {
-  // Match [n] for policy and [Wn] for web
-  const parts = text.split(/(\[(?:W\d+|\d+)\](?:\[(?:W\d+|\d+)\])*)/g);
+  const blocks = parseBlocks(text);
   return (
-    <span>
-      {parts.map((part, i) => {
-        const matches = part.match(/\[(W?\d+)\]/g);
-        if (matches && /^(\[(W?\d+)\])+$/.test(part)) {
+    <div className="space-y-2">
+      {blocks.map((b, i) => {
+        if (b.type === "heading") {
+          const cls =
+            b.level <= 2
+              ? "mt-3 mb-1 text-[15px] font-bold text-white first:mt-0"
+              : "mt-2 mb-0.5 text-sm font-bold text-white/95 first:mt-0";
           return (
-            <span key={i} className="inline-flex flex-wrap gap-0.5">
-              {matches.map((m, j) => {
-                const tag = m.slice(1, -1);
-                if (tag.startsWith("W")) {
-                  const n = parseInt(tag.slice(1), 10);
-                  const src = web.find((s) => s.n === n);
-                  if (!src) return <span key={j}>{m}</span>;
-                  return (
-                    <a
-                      key={j}
-                      href={src.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mx-0.5 inline-flex h-4 items-center gap-0.5 rounded bg-emerald-500/15 px-1 text-[10px] font-bold text-emerald-700 hover:bg-emerald-500/30"
-                      title={src.title}
-                    >
-                      W{n}
-                    </a>
-                  );
-                }
-                const n = parseInt(tag, 10);
-                const src = policy.find((s) => s.n === n);
-                if (!src) return <span key={j}>{m}</span>;
-                return (
-                  <Link
-                    key={j}
-                    href={`/policies/${src.policy_id}`}
-                    className="mx-0.5 inline-flex h-4 w-4 items-center justify-center rounded bg-navy-soft/25 text-[10px] font-bold text-navy-mid hover:bg-navy-soft hover:text-white"
-                    title={`${src.country} · ${src.title}`}
-                  >
-                    {n}
-                  </Link>
-                );
-              })}
-            </span>
+            <p key={i} className={cls}>
+              {renderInline(b.text, policy, web, `h${i}`)}
+            </p>
           );
         }
-        return <span key={i}>{part}</span>;
+        if (b.type === "ul") {
+          return (
+            <ul
+              key={i}
+              className="ml-4 list-disc space-y-1 marker:text-white/40"
+            >
+              {b.items.map((it, j) => (
+                <li key={j}>{renderInline(it, policy, web, `u${i}-${j}`)}</li>
+              ))}
+            </ul>
+          );
+        }
+        if (b.type === "ol") {
+          return (
+            <ol
+              key={i}
+              className="ml-4 list-decimal space-y-1 marker:text-white/40"
+            >
+              {b.items.map((it, j) => (
+                <li key={j}>{renderInline(it, policy, web, `o${i}-${j}`)}</li>
+              ))}
+            </ol>
+          );
+        }
+        if (b.type === "hr") {
+          return <hr key={i} className="my-2 border-white/10" />;
+        }
+        return (
+          <p key={i} className="leading-relaxed">
+            {renderInline(b.text, policy, web, `p${i}`)}
+          </p>
+        );
       })}
-    </span>
+    </div>
   );
 }
 

@@ -116,6 +116,14 @@ export async function POST(req: NextRequest) {
     sys = `${SYS_DEEP}\n\n=== Policy excerpts ===\n\n${buildPolicyBlock(policyChunks)}\n\n=== Live web results ===\n\n${buildWebBlock(webResults)}`;
   }
 
+  // ── Force the answer language to match the user's question ─
+  // The grounding context is all in English, which biases small models
+  // toward replying in English even when asked in Chinese. Make it explicit.
+  const hasChinese = /[一-鿿]/.test(userMsg);
+  sys += hasChinese
+    ? "\n\nIMPORTANT — LANGUAGE: The user asked in Chinese. You MUST write your ENTIRE response in Simplified Chinese (简体中文): all headings, body text and explanations. Keep citation markers ([1], [W1]), URLs, and official law/agency names in their original form."
+    : "\n\nIMPORTANT — LANGUAGE: The user asked in English. Write your entire response in English.";
+
   const history = body.messages.slice(0, -1).filter((m) => m.role !== "system");
 
   const zhipuKey = process.env.ZHIPU_API_KEY;
