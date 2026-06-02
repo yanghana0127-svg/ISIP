@@ -37,11 +37,23 @@ type WebSource = {
   score?: number;
 };
 
+type ISMSource = {
+  n: number;
+  tag: string;
+  country: string;
+  year: number | null;
+  lead_authority: string | null;
+  established: number | null;
+  score: number;
+  snippet: string;
+};
+
 type Message = {
   role: "user" | "assistant";
   content: string;
   mode?: Mode;
   policySources?: PolicySource[];
+  ismSources?: ISMSource[];
   webSources?: WebSource[];
 };
 
@@ -104,7 +116,14 @@ export function ChatRoom({
 
     setMessages((m) => [
       ...m,
-      { role: "assistant", content: "", mode, policySources: [], webSources: [] },
+      {
+        role: "assistant",
+        content: "",
+        mode,
+        policySources: [],
+        ismSources: [],
+        webSources: [],
+      },
     ]);
 
     try {
@@ -146,6 +165,7 @@ export function ChatRoom({
                   copy[copy.length - 1] = {
                     ...copy[copy.length - 1],
                     policySources: obj.policy ?? [],
+                    ismSources: obj.ism ?? [],
                     webSources: obj.web ?? [],
                   };
                   return copy;
@@ -345,6 +365,7 @@ export function ChatRoom({
         </div>
         <SourcesPanel
           policy={latestAssistant?.policySources ?? []}
+          ism={latestAssistant?.ismSources ?? []}
           web={latestAssistant?.webSources ?? []}
         />
       </aside>
@@ -384,6 +405,7 @@ function MessageBubble({
           <Markdown
             text={msg.content}
             policy={msg.policySources ?? []}
+            ism={msg.ismSources ?? []}
             web={msg.webSources ?? []}
           />
         ) : streaming ? (
@@ -481,13 +503,16 @@ function parseBlocks(src: string): Block[] {
 function renderCitations(
   text: string,
   policy: PolicySource[],
+  ism: ISMSource[],
   web: WebSource[],
   keyPrefix: string,
 ): React.ReactNode[] {
-  const parts = text.split(/(\[(?:W\d+|\d+)\](?:\[(?:W\d+|\d+)\])*)/g);
+  const parts = text.split(
+    /(\[(?:W\d+|I\d+|\d+)\](?:\[(?:W\d+|I\d+|\d+)\])*)/g,
+  );
   return parts.map((part, i) => {
-    if (part && /^(\[(?:W?\d+)\])+$/.test(part)) {
-      const matches = part.match(/\[(W?\d+)\]/g) ?? [];
+    if (part && /^(\[(?:[WI]?\d+)\])+$/.test(part)) {
+      const matches = part.match(/\[([WI]?\d+)\]/g) ?? [];
       return (
         <span key={`${keyPrefix}-${i}`} className="inline-flex flex-wrap gap-0.5">
           {matches.map((m, j) => {
@@ -507,6 +532,20 @@ function renderCitations(
                 >
                   W{n}
                 </a>
+              );
+            }
+            if (tag.startsWith("I")) {
+              const n = parseInt(tag.slice(1), 10);
+              const src = ism.find((s) => s.n === n);
+              if (!src) return <span key={j}>{m}</span>;
+              return (
+                <span
+                  key={j}
+                  className="mx-0.5 inline-flex h-4 items-center gap-0.5 rounded bg-amber-500/20 px-1 text-[10px] font-bold text-amber-700"
+                  title={`ISM · ${src.country}${src.year ? ` (${src.year})` : ""}`}
+                >
+                  I{n}
+                </span>
               );
             }
             const n = parseInt(tag, 10);
@@ -533,6 +572,7 @@ function renderCitations(
 function renderInline(
   text: string,
   policy: PolicySource[],
+  ism: ISMSource[],
   web: WebSource[],
   keyPrefix: string,
 ): React.ReactNode[] {
@@ -544,7 +584,7 @@ function renderInline(
     if (tok.startsWith("**") && tok.endsWith("**") && tok.length > 4) {
       nodes.push(
         <strong key={k} className="font-bold text-white">
-          {renderCitations(tok.slice(2, -2), policy, web, k)}
+          {renderCitations(tok.slice(2, -2), policy, ism, web, k)}
         </strong>,
       );
     } else if (tok.startsWith("`") && tok.endsWith("`") && tok.length > 2) {
@@ -559,11 +599,11 @@ function renderInline(
     } else if (tok.startsWith("*") && tok.endsWith("*") && tok.length > 2) {
       nodes.push(
         <em key={k} className="italic">
-          {renderCitations(tok.slice(1, -1), policy, web, k)}
+          {renderCitations(tok.slice(1, -1), policy, ism, web, k)}
         </em>,
       );
     } else {
-      nodes.push(...renderCitations(tok, policy, web, k));
+      nodes.push(...renderCitations(tok, policy, ism, web, k));
     }
   });
   return nodes;
@@ -572,10 +612,12 @@ function renderInline(
 function Markdown({
   text,
   policy,
+  ism,
   web,
 }: {
   text: string;
   policy: PolicySource[];
+  ism: ISMSource[];
   web: WebSource[];
 }) {
   const blocks = parseBlocks(text);
@@ -589,7 +631,7 @@ function Markdown({
               : "mt-2 mb-0.5 text-sm font-bold text-white/95 first:mt-0";
           return (
             <p key={i} className={cls}>
-              {renderInline(b.text, policy, web, `h${i}`)}
+              {renderInline(b.text, policy, ism, web, `h${i}`)}
             </p>
           );
         }
@@ -600,7 +642,9 @@ function Markdown({
               className="ml-4 list-disc space-y-1 marker:text-white/40"
             >
               {b.items.map((it, j) => (
-                <li key={j}>{renderInline(it, policy, web, `u${i}-${j}`)}</li>
+                <li key={j}>
+                  {renderInline(it, policy, ism, web, `u${i}-${j}`)}
+                </li>
               ))}
             </ul>
           );
@@ -612,7 +656,9 @@ function Markdown({
               className="ml-4 list-decimal space-y-1 marker:text-white/40"
             >
               {b.items.map((it, j) => (
-                <li key={j}>{renderInline(it, policy, web, `o${i}-${j}`)}</li>
+                <li key={j}>
+                  {renderInline(it, policy, ism, web, `o${i}-${j}`)}
+                </li>
               ))}
             </ol>
           );
@@ -622,7 +668,7 @@ function Markdown({
         }
         return (
           <p key={i} className="leading-relaxed">
-            {renderInline(b.text, policy, web, `p${i}`)}
+            {renderInline(b.text, policy, ism, web, `p${i}`)}
           </p>
         );
       })}
@@ -632,12 +678,14 @@ function Markdown({
 
 function SourcesPanel({
   policy,
+  ism,
   web,
 }: {
   policy: PolicySource[];
+  ism: ISMSource[];
   web: WebSource[];
 }) {
-  if (policy.length === 0 && web.length === 0) {
+  if (policy.length === 0 && ism.length === 0 && web.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-white/15 p-4 text-center text-xs text-white/50">
         Cited excerpts will appear here after the AI answers
@@ -689,6 +737,43 @@ function SourcesPanel({
                     Similarity {(s.score * 100).toFixed(1)}%
                   </div>
                 </Link>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+      {ism.length > 0 && (
+        <div>
+          <div className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-300/80">
+            <Layers3 className="h-3 w-3" /> ISM structured data
+          </div>
+          <ol className="space-y-2">
+            {ism.map((s) => (
+              <li key={s.n}>
+                <div className={srcCard} style={srcStyle}>
+                  <div className="flex items-center gap-2">
+                    <span className="grid h-5 shrink-0 place-items-center rounded bg-amber-400/20 px-1 text-[10px] font-bold text-amber-200">
+                      I{s.n}
+                    </span>
+                    <span className="text-xs font-semibold text-white">
+                      {s.country}
+                    </span>
+                    {s.year && (
+                      <span className="text-[10px] text-white/55">{s.year}</span>
+                    )}
+                  </div>
+                  {s.lead_authority && (
+                    <div className="mt-1 line-clamp-1 text-[11px] font-semibold text-white/85">
+                      {s.lead_authority}
+                    </div>
+                  )}
+                  <div className="mt-1.5 line-clamp-3 text-[11px] leading-snug text-white/65">
+                    {s.snippet}
+                  </div>
+                  <div className="mt-1.5 text-[10px] text-white/45">
+                    PRISM ISM · Similarity {(s.score * 100).toFixed(1)}%
+                  </div>
+                </div>
               </li>
             ))}
           </ol>

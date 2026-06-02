@@ -75,8 +75,9 @@ export async function retrieve(
   query: string,
   topK = 8,
   filters?: { country_slug?: string; industry?: string },
+  queryEmb?: number[],
 ): Promise<RetrievedChunk[]> {
-  const queryEmb = await embedQuery(query);
+  const q = queryEmb ?? (await embedQuery(query));
   const chunks = await loadChunks();
 
   const filtered = chunks.filter((c) => {
@@ -89,8 +90,51 @@ export async function retrieve(
 
   const scored = filtered.map((c) => ({
     ...c,
-    score: cosine(queryEmb, c.embedding),
+    score: cosine(q, c.embedding),
   }));
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, topK);
+}
+
+// ── ISM structured source (PRISM Investment Screening Mechanism data) ──
+export type ISMRecord = {
+  id: string;
+  country: string;
+  country_slug: string;
+  year: number | null;
+  lead_authority: string | null;
+  established: number | null;
+  source: "ism";
+  text: string;
+  embedding: number[];
+};
+export type RetrievedISM = ISMRecord & { score: number };
+
+let _ism: ISMRecord[] | null = null;
+
+export async function loadISM(): Promise<ISMRecord[]> {
+  if (_ism) return _ism;
+  const raw = await fs.readFile(
+    path.join(process.cwd(), "data", "ism.json"),
+    "utf-8",
+  );
+  _ism = JSON.parse(raw) as ISMRecord[];
+  return _ism;
+}
+
+export async function retrieveISM(
+  query: string,
+  topK = 3,
+  filters?: { country_slug?: string },
+  queryEmb?: number[],
+): Promise<RetrievedISM[]> {
+  const q = queryEmb ?? (await embedQuery(query));
+  const recs = await loadISM();
+  const filtered = filters?.country_slug
+    ? recs.filter((r) => r.country_slug === filters.country_slug)
+    : recs;
+  const pool = filtered.length > 0 ? filtered : recs;
+  const scored = pool.map((r) => ({ ...r, score: cosine(q, r.embedding) }));
   scored.sort((a, b) => b.score - a.score);
   return scored.slice(0, topK);
 }

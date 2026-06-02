@@ -1,5 +1,11 @@
 import { NextRequest } from "next/server";
-import { retrieve, type RetrievedChunk } from "@/lib/rag";
+import {
+  retrieve,
+  retrieveISM,
+  embedQuery,
+  type RetrievedChunk,
+  type RetrievedISM,
+} from "@/lib/rag";
 import { tavilySearch, type WebResult } from "@/lib/web-search";
 
 export const runtime = "nodejs";
@@ -29,17 +35,22 @@ Rules:
 5. If results don't cover the question, say so.`;
 
 const SYS_DEEP = `You are the AI Advisor of the Investment Screening Intelligence Platform.
-You produce a structured INVESTMENT OPINION combining (a) authoritative policy excerpts and (b) live web evidence.
+You produce a structured INVESTMENT OPINION by fusing THREE sources:
+(a) authoritative policy excerpts (the statutes themselves),
+(b) structured ISM data — PRISM Investment Screening Mechanism profiles with each country's mechanism attributes, thresholds, covered sectors and change history, and
+(c) live web evidence (recent news / cases).
 
 Rules:
-1. Ground in BOTH sources. Use [1], [2] for policy excerpts and [W1], [W2] for web results.
-2. Answer in the SAME language as the user.
-3. Use this structure:
-   ### Regulatory Landscape  — what laws apply (cite policies)
+1. Ground in ALL available sources. Cite with [1], [2] for policy excerpts, [I1], [I2] for ISM data profiles, and [W1], [W2] for web results.
+2. Prefer the structured ISM data for hard facts (thresholds, timeframes, covered sectors, lead authority); use policy excerpts for legal wording and web for the latest developments.
+3. Answer in the SAME language as the user.
+4. Use this structure:
+   ### Regulatory Landscape  — what laws & mechanisms apply (cite policy + ISM)
+   ### Mechanism Snapshot  — thresholds, timeframe, covered sectors, lead authority (cite ISM)
    ### Recent Developments  — latest news / cases (cite web)
    ### Key Risks  — what's likely to be blocked or scrutinised
    ### Compliance Recommendations  — concrete next steps
-4. Be specific and actionable.`;
+5. Be specific and actionable.`;
 
 function buildPolicyBlock(chunks: RetrievedChunk[]): string {
   return chunks
@@ -49,6 +60,12 @@ function buildPolicyBlock(chunks: RetrievedChunk[]): string {
           c.year ? ` (${c.year})` : ""
         }\n${c.text}`,
     )
+    .join("\n\n---\n\n");
+}
+
+function buildISMBlock(records: RetrievedISM[]): string {
+  return records
+    .map((r, i) => `[I${i + 1}] ${r.text}`)
     .join("\n\n---\n\n");
 }
 
@@ -80,16 +97,40 @@ export async function POST(req: NextRequest) {
 
   // ── Retrieve depending on mode ─────────────────────────────
   let policyChunks: RetrievedChunk[] = [];
+  let ismRecords: RetrievedISM[] = [];
   let webResults: WebResult[] = [];
+
+  // Embed the query once and reuse for both policy + ISM retrieval.
+  let queryEmb: number[] | undefined;
+  if (mode === "policy" || mode === "deep") {
+    try {
+      queryEmb = await embedQuery(userMsg);
+    } catch (e) {
+      console.warn("embed query failed:", e);
+    }
+  }
 
   try {
     if (mode === "policy" || mode === "deep") {
       try {
-        policyChunks = await retrieve(userMsg, mode === "deep" ? 4 : 6, filters);
+        policyChunks = await retrieve(
+          userMsg,
+          mode === "deep" ? 4 : 6,
+          filters,
+          queryEmb,
+        );
       } catch (e) {
         // chunks.json may not exist yet — surface but don't crash
         console.warn("policy retrieve failed:", e);
         policyChunks = [];
+      }
+    }
+    if (mode === "deep") {
+      try {
+        ismRecords = await retrieveISM(userMsg, 3, filters, queryEmb);
+      } catch (e) {
+        console.warn("ISM retrieve failed:", e);
+        ismRecords = [];
       }
     }
     if (mode === "web" || mode === "deep") {
@@ -113,7 +154,21 @@ export async function POST(req: NextRequest) {
   } else if (mode === "web") {
     sys = `${SYS_WEB}\n\nLive web results:\n\n${buildWebBlock(webResults)}`;
   } else {
-    sys = `${SYS_DEEP}\n\n=== Policy excerpts ===\n\n${buildPolicyBlock(policyChunks)}\n\n=== Live web results ===\n\n${buildWebBlock(webResults)}`;
+    sys = `${SYS_DEEP}\n\n=== Policy excerpts ===\n\n${buildPolicyBlock(policyChunks)}\n\n=== ISM structured data ===\n\n${buildISMBlock(ismRecords)}\n\n=== Live web results ===\n\n${buildWebBlock(webResults)}`;
+  }
+
+  // ── Tier-2 multi-turn comparison directive ────────────────
+  // On follow-up turns, the user is usually comparing or drilling into
+  // jurisdictions raised earlier. Make the agent carry that context and
+  // present comparisons as a clean side-by-side rather than prose only.
+  const priorTurns = body.messages.filter((m) => m.role !== "system").length - 1;
+  const comparing =
+    /compare|comparison|versus|\bvs\b|difference|differ|whereas|相比|对比|比较|区别|差异/i.test(
+      userMsg,
+    );
+  if (priorTurns > 0 || comparing) {
+    sys +=
+      "\n\nMULTI-TURN & COMPARISON: This is a continuing conversation. Resolve pronouns and follow-ups against the earlier turns (e.g. 'what about Germany?' continues the same topic). When two or more jurisdictions, policies or time periods are being compared, present the comparison as a compact Markdown table (one row per item, columns for the dimensions compared), then add a short interpretation below it. Keep citation markers in the table cells.";
   }
 
   // ── Force the answer language to match the user's question ─
@@ -172,6 +227,16 @@ export async function POST(req: NextRequest) {
       year: c.year,
       score: c.score,
       snippet: c.text.slice(0, 240),
+    })),
+    ism: ismRecords.map((r, i) => ({
+      n: i + 1,
+      tag: `I${i + 1}`,
+      country: r.country,
+      year: r.year,
+      lead_authority: r.lead_authority,
+      established: r.established,
+      score: r.score,
+      snippet: r.text.slice(0, 260),
     })),
     web: webResults.map((r, i) => ({
       n: i + 1,
