@@ -1,0 +1,140 @@
+[
+  {
+    "slug": "defense-security",
+    "name_zh": "国防与安全",
+    "name_en": "Defense & Security",
+    "color": "#0B2447",
+    "keywords": [
+      "defense",
+      "defence",
+      "military",
+      "weapon",
+      "armament",
+      "national security",
+      "cyber",
+      "intelligence",
+      "critical infrastructure"
+    ],
+    "policy_count": 22,
+    "country_count": 9
+  },
+  {
+    "slug": "semiconductor-computing",
+    "name_zh": "半导体与计算",
+    "name_en": "Semiconductors & Computing",
+    "color": "#19376D",
+    "keywords": [
+      "semiconductor",
+      "chip",
+      "microprocessor",
+      "advanced computing",
+      "quantum",
+      "artificial intelligence",
+      "machine learning",
+      "data analytics",
+      "AI",
+      "ML"
+    ],
+    "policy_count": 83,
+    "country_count": 22
+  },
+  {
+    "slug": "energy-resources",
+    "name_zh": "能源与资源",
+    "name_en": "Energy & Resources",
+    "color": "#576CBC",
+    "keywords": [
+      "energy",
+      "electricity",
+      "power",
+      "oil",
+      "gas",
+      "petroleum",
+      "nuclear",
+      "mineral",
+      "rare earth",
+      "mining",
+      "storage"
+    ],
+    "policy_count": 26,
+    "country_count": 16
+  },
+  {
+    "slug": "telecom-data",
+    "name_zh": "电信与数据",
+    "name_en": "Telecom & Data",
+    "color": "#1F6F8B",
+    "keywords": [
+      "telecom",
+      "telecommunication",
+      "broadband",
+      "5G",
+      "data",
+      "personal data",
+      "surveillance",
+      "communication"
+    ],
+    "policy_count": 30,
+    "country_count": 14
+  },
+  {
+    "slug": "transport-logistics",
+    "name_zh": "交通与物流",
+    "name_en": "Transport & Logistics",
+    "color": "#2C5F2D",
+    "keywords": [
+      "transport",
+      "aviation",
+      "airport",
+      "maritime",
+      "port",
+      "shipping",
+      "logistics",
+      "space",
+      "satellite",
+      "railway"
+    ],
+    "policy_count": 49,
+    "country_count": 15
+  },
+  {
+    "slug": "bio-medical",
+    "name_zh": "生物与医疗",
+    "name_en": "Biotech & Medical",
+    "color": "#7D3C98",
+    "keywords": [
+      "health",
+      "medical",
+      "pharmaceutical",
+      "biotech",
+      "biological",
+      "agriculture",
+      "food",
+      "vaccine",
+      "genome",
+      "drug"
+    ],
+    "policy_count": 3,
+    "country_count": 3
+  },
+  {
+    "slug": "finance-property",
+    "name_zh": "金融与地产",
+    "name_en": "Finance & Property",
+    "color": "#C9A227",
+    "keywords": [
+      "finance",
+      "bank",
+      "insurance",
+      "media",
+      "broadcast",
+      "real estate",
+      "property",
+      "land",
+      "tourism",
+      "investment fund"
+    ],
+    "policy_count": 37,
+    "country_count": 16
+  }
+]

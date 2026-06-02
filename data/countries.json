@@ -1,0 +1,233 @@
+[
+  {
+    "name": "Australia",
+    "slug": "australia",
+    "policy_count": 10,
+    "year_min": 1975,
+    "year_max": 2022
+  },
+  {
+    "name": "Austria",
+    "slug": "austria",
+    "policy_count": 3,
+    "year_min": 2011,
+    "year_max": 2011
+  },
+  {
+    "name": "Belgium",
+    "slug": "belgium",
+    "policy_count": 1,
+    "year_min": 2022,
+    "year_max": 2022
+  },
+  {
+    "name": "Canada",
+    "slug": "canada",
+    "policy_count": 11,
+    "year_min": 1985,
+    "year_max": 2026
+  },
+  {
+    "name": "Czech Republic",
+    "slug": "czech-republic",
+    "policy_count": 1,
+    "year_min": 2021,
+    "year_max": 2021
+  },
+  {
+    "name": "Denmark",
+    "slug": "denmark",
+    "policy_count": 6,
+    "year_min": 1937,
+    "year_max": 2026
+  },
+  {
+    "name": "Estonia",
+    "slug": "estonia",
+    "policy_count": 1,
+    "year_min": 2023,
+    "year_max": 2023
+  },
+  {
+    "name": "Finland",
+    "slug": "finland",
+    "policy_count": 4,
+    "year_min": 1992,
+    "year_max": 2020
+  },
+  {
+    "name": "France",
+    "slug": "france",
+    "policy_count": 11,
+    "year_min": 1958,
+    "year_max": 2023
+  },
+  {
+    "name": "Germany",
+    "slug": "germany",
+    "policy_count": 7,
+    "year_min": 2004,
+    "year_max": 2020
+  },
+  {
+    "name": "Hungary",
+    "slug": "hungary",
+    "policy_count": 3,
+    "year_min": 2018,
+    "year_max": 2022
+  },
+  {
+    "name": "Ireland",
+    "slug": "ireland",
+    "policy_count": 1,
+    "year_min": 2023,
+    "year_max": 2023
+  },
+  {
+    "name": "Israel",
+    "slug": "israel",
+    "policy_count": 2,
+    "year_min": null,
+    "year_max": null
+  },
+  {
+    "name": "Italy",
+    "slug": "italy",
+    "policy_count": 11,
+    "year_min": 2014,
+    "year_max": 2022
+  },
+  {
+    "name": "Japan",
+    "slug": "japan",
+    "policy_count": 9,
+    "year_min": 1980,
+    "year_max": 1980
+  },
+  {
+    "name": "Latvia",
+    "slug": "latvia",
+    "policy_count": 1,
+    "year_min": 2021,
+    "year_max": 2021
+  },
+  {
+    "name": "Lithuania",
+    "slug": "lithuania",
+    "policy_count": 3,
+    "year_min": 2002,
+    "year_max": 2012
+  },
+  {
+    "name": "Luxembourg",
+    "slug": "luxembourg",
+    "policy_count": 1,
+    "year_min": null,
+    "year_max": null
+  },
+  {
+    "name": "Mexico",
+    "slug": "mexico",
+    "policy_count": 1,
+    "year_min": 2008,
+    "year_max": 2008
+  },
+  {
+    "name": "Netherlands",
+    "slug": "netherlands",
+    "policy_count": 6,
+    "year_min": 2000,
+    "year_max": 2000
+  },
+  {
+    "name": "New Zealand",
+    "slug": "new-zealand",
+    "policy_count": 7,
+    "year_min": 2000,
+    "year_max": 2026
+  },
+  {
+    "name": "Norway",
+    "slug": "norway",
+    "policy_count": 1,
+    "year_min": 2018,
+    "year_max": 2018
+  },
+  {
+    "name": "Poland",
+    "slug": "poland",
+    "policy_count": 6,
+    "year_min": 1992,
+    "year_max": 2022
+  },
+  {
+    "name": "Portugal",
+    "slug": "portugal",
+    "policy_count": 1,
+    "year_min": 2014,
+    "year_max": 2014
+  },
+  {
+    "name": "Slovakia",
+    "slug": "slovakia",
+    "policy_count": 2,
+    "year_min": 2021,
+    "year_max": 2022
+  },
+  {
+    "name": "Slovenia",
+    "slug": "slovenia",
+    "policy_count": 2,
+    "year_min": 2020,
+    "year_max": 2023
+  },
+  {
+    "name": "South Korea",
+    "slug": "south-korea",
+    "policy_count": 7,
+    "year_min": 1998,
+    "year_max": 2022
+  },
+  {
+    "name": "Spain",
+    "slug": "spain",
+    "policy_count": 10,
+    "year_min": 1978,
+    "year_max": 2022
+  },
+  {
+    "name": "Spain (EU)",
+    "slug": "spain-eu",
+    "policy_count": 1,
+    "year_min": 2019,
+    "year_max": 2019
+  },
+  {
+    "name": "Sweden",
+    "slug": "sweden",
+    "policy_count": 1,
+    "year_min": 2023,
+    "year_max": 2023
+  },
+  {
+    "name": "Turkey",
+    "slug": "turkey",
+    "policy_count": 1,
+    "year_min": null,
+    "year_max": null
+  },
+  {
+    "name": "United Kingdom",
+    "slug": "united-kingdom",
+    "policy_count": 4,
+    "year_min": 2002,
+    "year_max": 2022
+  },
+  {
+    "name": "United States",
+    "slug": "united-states",
+    "policy_count": 5,
+    "year_min": 1964,
+    "year_max": 2022
+  }
+]
