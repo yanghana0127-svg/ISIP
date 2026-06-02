@@ -19,6 +19,7 @@ export function Navbar() {
         </Link>
         <nav className="ml-auto flex items-center gap-1 text-sm">
           <NavLink href="/">Home</NavLink>
+          <NavLink href="/countries">Countries</NavLink>
           <NavLink href="/policies">Policies</NavLink>
           <NavLink href="/chat">AI Advisor</NavLink>
         </nav>

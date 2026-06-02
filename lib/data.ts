@@ -1,7 +1,17 @@
 import "server-only";
 import { promises as fs } from "fs";
 import path from "path";
-import type { Policy, PolicyMeta, Country, Industry, Stats } from "./types";
+import type {
+  Policy,
+  PolicyMeta,
+  Country,
+  Industry,
+  Stats,
+  ISMYearly,
+  ISMPanel,
+  ISMCountry,
+  ISMMeta,
+} from "./types";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 
@@ -9,6 +19,10 @@ let _policies: Policy[] | null = null;
 let _countries: Country[] | null = null;
 let _industries: Industry[] | null = null;
 let _stats: Stats | null = null;
+let _ismYearly: ISMYearly[] | null = null;
+let _ismPanel: ISMPanel[] | null = null;
+let _ismCountries: ISMCountry[] | null = null;
+let _ismMeta: ISMMeta | null = null;
 
 async function readJson<T>(name: string): Promise<T> {
   const raw = await fs.readFile(path.join(DATA_DIR, name), "utf-8");
@@ -57,4 +71,25 @@ export async function getStats(): Promise<Stats> {
 export async function getPoliciesByIndustry(slug: string): Promise<PolicyMeta[]> {
   const all = await getAllPoliciesMeta();
   return all.filter((p) => p.industries.includes(slug));
+}
+
+export async function getISMYearly(): Promise<ISMYearly[]> {
+  if (!_ismYearly) _ismYearly = await readJson<ISMYearly[]>("ism_yearly.json");
+  return _ismYearly;
+}
+
+export async function getISMPanel(): Promise<ISMPanel[]> {
+  if (!_ismPanel) _ismPanel = await readJson<ISMPanel[]>("ism_panel.json");
+  return _ismPanel;
+}
+
+export async function getISMCountries(): Promise<ISMCountry[]> {
+  if (!_ismCountries)
+    _ismCountries = await readJson<ISMCountry[]>("ism_country.json");
+  return _ismCountries;
+}
+
+export async function getISMMeta(): Promise<ISMMeta> {
+  if (!_ismMeta) _ismMeta = await readJson<ISMMeta>("ism_meta.json");
+  return _ismMeta;
 }

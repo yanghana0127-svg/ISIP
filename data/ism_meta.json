@@ -1,0 +1,40 @@
+{
+  "yearRange": [
+    2007,
+    2024
+  ],
+  "yearlyRange": [
+    1920,
+    2023
+  ],
+  "sectorGroups": [
+    "Defense",
+    "Critical Infra",
+    "Next-Gen Infra",
+    "Critical Tech",
+    "Services",
+    "Finance",
+    "Media",
+    "Personal Data"
+  ],
+  "countryCount": 38,
+  "strictness": {
+    "weights": {
+      "notification": 2.0,
+      "preapproval": 2.0,
+      "callIn": 1.5,
+      "nsTest": 1.5,
+      "netBenefit": 1.0,
+      "competition": 1.0,
+      "reviewIncrease": 1.0,
+      "greenfield": 1.0,
+      "realEstate": 1.0,
+      "mitigation": 1.0,
+      "fines": 1.0,
+      "enhancedGovControl": 1.5,
+      "coverageBreadth": 3.0
+    },
+    "max": 18.5,
+    "note": "0-100 composite of ISM mechanism features + sector-coverage breadth."
+  }
+}

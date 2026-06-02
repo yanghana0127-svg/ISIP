@@ -1,7 +1,16 @@
 import Link from "next/link";
-import { getIndustries, getStats, getCountries } from "@/lib/data";
+import {
+  getIndustries,
+  getStats,
+  getCountries,
+  getISMCountries,
+  getISMYearly,
+  getISMMeta,
+} from "@/lib/data";
 import { IndustryCard } from "@/components/industry-card";
 import { GlobalOverview } from "@/components/charts/global-overview";
+import { WorldMap } from "@/components/charts/world-map";
+import { GlobalTimeline } from "@/components/charts/global-timeline";
 import {
   Search,
   MessageSquare,
@@ -10,14 +19,19 @@ import {
   GitCompare,
   ClipboardCheck,
   BarChart3,
+  Globe2,
 } from "lucide-react";
 
 export default async function HomePage() {
-  const [industries, stats, countries] = await Promise.all([
-    getIndustries(),
-    getStats(),
-    getCountries(),
-  ]);
+  const [industries, stats, countries, ismCountries, ismYearly, ismMeta] =
+    await Promise.all([
+      getIndustries(),
+      getStats(),
+      getCountries(),
+      getISMCountries(),
+      getISMYearly(),
+      getISMMeta(),
+    ]);
 
   return (
     <div className="space-y-12">
@@ -63,6 +77,42 @@ export default async function HomePage() {
               <MessageSquare className="h-4 w-4" /> Ask the AI Advisor
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* World map + global tightening wave */}
+      <section className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Globe2 className="h-4 w-4 text-navy-soft" />
+          <h2 className="text-xl font-bold text-gradient-navy">
+            The screening map
+          </h2>
+          <span className="text-xs text-navy-mid/60">
+            Drag the year, or hit play, to watch FDI screening spread worldwide
+          </span>
+        </div>
+        <WorldMap
+          countries={ismCountries}
+          yearly={ismYearly}
+          yearlyRange={ismMeta.yearlyRange}
+        />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <GlobalTimeline yearly={ismYearly} />
+          <Link
+            href="/countries"
+            className="glass-soft group flex flex-col justify-center gap-2 rounded-2xl p-6 transition hover:-translate-y-0.5"
+          >
+            <span className="text-xs font-semibold uppercase tracking-wider text-navy-mid/60">
+              New · Country Atlas
+            </span>
+            <span className="text-lg font-bold text-navy-dark">
+              Explore every country&apos;s screening profile →
+            </span>
+            <span className="text-sm text-navy-mid/80">
+              Strictness Index, sector coverage, mechanism timeline and a
+              cross-country coverage heatmap — built on the PRISM ISM dataset.
+            </span>
+          </Link>
         </div>
       </section>
 
