@@ -22,15 +22,15 @@ export default async function PoliciesPage() {
           <div className="flex items-center gap-2 text-white/70">
             <Search className="h-4 w-4" />
             <span className="text-xs font-semibold uppercase tracking-wider">
-              政策检索
+              Policy search
             </span>
           </div>
           <h1 className="mt-1 text-3xl font-bold md:text-4xl">
-            查全球投资审查政策原文
+            Search the full corpus of FDI screening laws
           </h1>
           <p className="mt-1 text-sm text-white/70">
-            共 {policies.length} 份政策、{countries.length}
-            {" "}个国家，输入关键词即时搜索，支持按国家和行业筛选
+            {policies.length} policies across {countries.length} countries.
+            Type any keyword for instant search, filter by country or sector.
           </p>
         </div>
       </header>

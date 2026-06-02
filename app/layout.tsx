@@ -3,9 +3,9 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 
 export const metadata: Metadata = {
-  title: "投资审查智能平台 ISIP",
+  title: "ISIP — Investment Screening Intelligence Platform",
   description:
-    "跨国投资审查政策检索、案例分析与 AI 顾问，覆盖 34 国 141 份审查法规",
+    "Search foreign investment screening policies, cases and an AI advisor across 34 countries and 141 legal documents.",
 };
 
 export default function RootLayout({
@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="en">
       <body className="min-h-screen text-[#0b2447]">
         <div className="blob-bg" aria-hidden="true">
           <span className="blob blob-1" />
@@ -25,7 +25,7 @@ export default function RootLayout({
         <Navbar />
         <main className="mx-auto w-full max-w-7xl px-4 py-8">{children}</main>
         <footer className="mx-auto mt-12 max-w-7xl px-4 pb-10 text-center text-xs text-navy-mid/60">
-          投资审查智能平台 ISIP 2026
+          Investment Screening Intelligence Platform · ISIP · 2026
         </footer>
       </body>
     </html>

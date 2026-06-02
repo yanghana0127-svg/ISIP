@@ -31,7 +31,6 @@ export default async function IndustryPage({
   }
   const countries = Object.keys(byCountry).sort();
 
-  // quick stats for header
   const yearsKnown = policies.map((p) => p.year).filter((y): y is number => !!y);
   const yearRange =
     yearsKnown.length > 0
@@ -44,7 +43,7 @@ export default async function IndustryPage({
         href="/"
         className="inline-flex items-center gap-1 text-sm text-navy-mid hover:text-navy-dark"
       >
-        <ArrowLeft className="h-4 w-4" /> 返回首页
+        <ArrowLeft className="h-4 w-4" /> Back to home
       </Link>
 
       {/* header */}
@@ -59,7 +58,7 @@ export default async function IndustryPage({
         />
         <div className="relative">
           <div className="text-xs font-semibold uppercase tracking-wider text-white/60">
-            Industry Sector
+            Industry sector
           </div>
           <h1 className="mt-1 text-3xl font-bold md:text-4xl">{ind.name_en}</h1>
           <p className="mt-1 text-sm text-white/70">{ind.name_zh}</p>
@@ -85,9 +84,9 @@ export default async function IndustryPage({
       <section className="space-y-4">
         <div className="flex items-center gap-2">
           <BarChart3 className="h-4 w-4 text-navy-soft" />
-          <h2 className="text-xl font-bold text-gradient-navy">数据洞察</h2>
+          <h2 className="text-xl font-bold text-gradient-navy">Data insights</h2>
           <span className="text-xs text-navy-mid/60">
-            从图表里直观看出各国在这个行业的监管差异
+            Compare how countries regulate this sector at a glance
           </span>
         </div>
         <div className="grid gap-4 lg:grid-cols-2">
@@ -103,28 +102,31 @@ export default async function IndustryPage({
         <div>
           <div className="flex items-center gap-2 text-navy-dark">
             <Sparkles className="h-4 w-4 text-navy-soft" />
-            <span className="text-sm font-semibold">就这个行业，直接问 AI</span>
+            <span className="text-sm font-semibold">
+              Ask the AI Advisor about this sector
+            </span>
           </div>
           <p className="mt-1 text-sm text-navy-mid">
-            比如：「{ind.name_en} 在欧美的审查门槛差别有多大？」
+            Try: “How do US and EU screening thresholds differ for{" "}
+            {ind.name_en}?”
           </p>
         </div>
         <Link
           href={`/chat?industry=${ind.slug}`}
           className="glass-primary inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
         >
-          <MessageSquare className="h-4 w-4" /> 在此行业上下文中提问
+          <MessageSquare className="h-4 w-4" /> Ask in this context
         </Link>
       </section>
 
       {/* policies by country */}
       <section className="space-y-6">
         <h2 className="text-2xl font-bold text-gradient-navy">
-          相关政策，按国家分组
+          Related policies, grouped by country
         </h2>
         {countries.length === 0 && (
           <div className="glass-soft rounded-2xl p-12 text-center text-sm text-navy-mid/70">
-            暂无匹配政策
+            No matching policies
           </div>
         )}
         {countries.map((c) => (
@@ -132,7 +134,7 @@ export default async function IndustryPage({
             <div className="mb-2 flex items-baseline gap-2">
               <h3 className="text-base font-semibold text-navy-mid">{c}</h3>
               <span className="text-xs text-navy-mid/60">
-                {byCountry[c].length} 份
+                {byCountry[c].length} policies
               </span>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

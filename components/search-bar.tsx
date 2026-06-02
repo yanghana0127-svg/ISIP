@@ -49,14 +49,14 @@ export function SearchBar({
             type="text"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="搜索政策标题、国家、关键词…（例：China semiconductor、CFIUS、national security）"
+            placeholder="Search by title, country, or keyword (e.g. China semiconductor, CFIUS, national security)"
             className="w-full rounded-xl border border-white/60 bg-white/40 py-2.5 pl-9 pr-10 text-sm text-navy-dark placeholder:text-navy-mid/50 outline-none backdrop-blur transition focus:border-navy-soft focus:bg-white/70 focus:ring-2 focus:ring-navy-soft/30"
           />
           {q && (
             <button
               onClick={() => setQ("")}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-navy-mid hover:text-navy-dark"
-              aria-label="清空"
+              aria-label="clear"
             >
               <X className="h-4 w-4" />
             </button>
@@ -67,12 +67,12 @@ export function SearchBar({
             onClick={() => setShowAdvanced((v) => !v)}
             className="rounded-lg border border-white/60 bg-white/40 px-3 py-1 font-semibold text-navy-mid backdrop-blur transition hover:bg-white/70"
           >
-            {showAdvanced ? "收起筛选" : "高级筛选"}
+            {showAdvanced ? "Hide filters" : "Filters"}
           </button>
           <div className="ml-auto flex items-center gap-2 text-navy-mid/80">
             {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             <span>
-              共 <strong className="text-navy-dark">{total}</strong> 条结果
+              <strong className="text-navy-dark">{total}</strong> results
             </span>
           </div>
         </div>
@@ -83,7 +83,7 @@ export function SearchBar({
               onChange={(e) => setCountry(e.target.value)}
               className="rounded-xl border border-white/60 bg-white/50 px-3 py-2 text-sm text-navy-dark backdrop-blur"
             >
-              <option value="">所有国家</option>
+              <option value="">All countries</option>
               {countries.map((c) => (
                 <option key={c.slug} value={c.slug}>
                   {c.name} ({c.policy_count})
@@ -95,10 +95,10 @@ export function SearchBar({
               onChange={(e) => setIndustry(e.target.value)}
               className="rounded-xl border border-white/60 bg-white/50 px-3 py-2 text-sm text-navy-dark backdrop-blur"
             >
-              <option value="">所有行业</option>
+              <option value="">All sectors</option>
               {industries.map((i) => (
                 <option key={i.slug} value={i.slug}>
-                  {i.name_zh} ({i.policy_count})
+                  {i.name_en} ({i.policy_count})
                 </option>
               ))}
             </select>
@@ -112,7 +112,7 @@ export function SearchBar({
         ))}
         {results.length === 0 && (
           <div className="glass-soft col-span-full rounded-2xl p-12 text-center text-sm text-navy-mid/70">
-            没有匹配结果，试试别的关键词
+            No matching results, try a different keyword
           </div>
         )}
       </div>

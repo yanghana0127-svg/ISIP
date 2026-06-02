@@ -44,10 +44,10 @@ export function GlobalOverview({
       <div className="glass rounded-2xl p-5 lg:col-span-3">
         <div className="mb-2">
           <h3 className="text-base font-bold text-navy-dark">
-            哪些国家立法最活跃
+            Most legislatively active countries
           </h3>
           <p className="text-xs text-navy-mid/70">
-            按政策数量排名前 15 的国家
+            Top 15 countries by policy count
           </p>
         </div>
         <div className="h-64 w-full">
@@ -61,8 +61,8 @@ export function GlobalOverview({
             >
               <defs>
                 <linearGradient id="ovGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#576cbc" stopOpacity={0.85} />
-                  <stop offset="100%" stopColor="#19376d" stopOpacity={0.75} />
+                  <stop offset="0%" stopColor="#7c91d6" stopOpacity={1} />
+                  <stop offset="100%" stopColor="#0f2a55" stopOpacity={1} />
                 </linearGradient>
               </defs>
               <CartesianGrid

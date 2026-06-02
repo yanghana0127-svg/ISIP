@@ -17,16 +17,15 @@ import {
 } from "recharts";
 import type { PolicyMeta } from "@/lib/types";
 
-// Desaturated navy palette — matches background blobs / glass surfaces
 const PALETTE = [
-  "#19376d", // navy-mid
-  "#576cbc", // navy-soft
-  "#7d8fbf", // muted slate-blue
-  "#4f6a9b", // dusty navy
-  "#9fb3d6", // pale steel
-  "#36497a", // deep slate
-  "#2c4a78", // ocean navy
-  "#b4c4dd", // mist
+  "#19376d",
+  "#576cbc",
+  "#7d8fbf",
+  "#4f6a9b",
+  "#9fb3d6",
+  "#36497a",
+  "#2c4a78",
+  "#b4c4dd",
 ];
 
 const TOOLTIP_STYLE = {
@@ -59,7 +58,6 @@ function ChartCard({
   );
 }
 
-/** Bar: top N countries by policy count within this industry */
 export function CountryPolicyCountBar({
   policies,
   topN = 10,
@@ -76,7 +74,7 @@ export function CountryPolicyCountBar({
 
   return (
     <ChartCard
-      title="哪些国家在这个行业的法规最多"
+      title="Which countries legislate the most in this sector"
       subtitle={`Top ${data.length} countries by policy count`}
     >
       <ResponsiveContainer>
@@ -86,8 +84,8 @@ export function CountryPolicyCountBar({
         >
           <defs>
             <linearGradient id="barNavy" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#576cbc" stopOpacity={0.85} />
-              <stop offset="100%" stopColor="#19376d" stopOpacity={0.75} />
+              <stop offset="0%" stopColor="#7c91d6" stopOpacity={1} />
+              <stop offset="100%" stopColor="#0f2a55" stopOpacity={1} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(11,36,71,0.08)" />
@@ -114,7 +112,6 @@ export function CountryPolicyCountBar({
   );
 }
 
-/** Area: cumulative policy issuance over years */
 export function PolicyTimelineArea({ policies }: { policies: PolicyMeta[] }) {
   const yearCount: Record<number, number> = {};
   for (const p of policies) {
@@ -127,9 +124,9 @@ export function PolicyTimelineArea({ policies }: { policies: PolicyMeta[] }) {
     .sort((a, b) => a - b);
   if (years.length === 0) {
     return (
-      <ChartCard title="政策发布的时间分布" subtitle="Policy timeline by year">
+      <ChartCard title="Policy timeline" subtitle="Issuance by year">
         <div className="grid h-full place-items-center text-sm text-navy-mid/60">
-          暂无年份信息可分析
+          No year information available
         </div>
       </ChartCard>
     );
@@ -146,8 +143,8 @@ export function PolicyTimelineArea({ policies }: { policies: PolicyMeta[] }) {
 
   return (
     <ChartCard
-      title="政策发布的时间趋势"
-      subtitle="New per year + cumulative total"
+      title="When were these policies enacted"
+      subtitle="New per year and cumulative total"
     >
       <ResponsiveContainer>
         <AreaChart
@@ -175,7 +172,7 @@ export function PolicyTimelineArea({ policies }: { policies: PolicyMeta[] }) {
           <Area
             type="monotone"
             dataKey="cumulative"
-            name="累计 Cumulative"
+            name="Cumulative"
             stroke="#576cbc"
             fill="url(#cumGrad)"
             strokeWidth={2}
@@ -183,7 +180,7 @@ export function PolicyTimelineArea({ policies }: { policies: PolicyMeta[] }) {
           <Area
             type="monotone"
             dataKey="count"
-            name="当年新增 New per year"
+            name="New per year"
             stroke="#19376d"
             fill="url(#newGrad)"
             strokeWidth={2}
@@ -194,7 +191,6 @@ export function PolicyTimelineArea({ policies }: { policies: PolicyMeta[] }) {
   );
 }
 
-/** Pie: distribution by source format (pdf vs html) */
 export function FormatPie({ policies }: { policies: PolicyMeta[] }) {
   const counts: Record<string, number> = {};
   for (const p of policies)
@@ -204,7 +200,10 @@ export function FormatPie({ policies }: { policies: PolicyMeta[] }) {
     value,
   }));
   return (
-    <ChartCard title="政策原文的来源格式" subtitle="Source format: PDF vs HTML">
+    <ChartCard
+      title="Source format"
+      subtitle="Distribution of policy file formats"
+    >
       <ResponsiveContainer>
         <PieChart>
           <Pie
@@ -228,7 +227,6 @@ export function FormatPie({ policies }: { policies: PolicyMeta[] }) {
   );
 }
 
-/** Stacked bar: policies per country broken down by decade */
 export function CountryDecadeStack({
   policies,
   topN = 8,
@@ -237,7 +235,7 @@ export function CountryDecadeStack({
   topN?: number;
 }) {
   const decadeOf = (y: number | null): string => {
-    if (!y) return "未知";
+    if (!y) return "Unknown";
     const d = Math.floor(y / 10) * 10;
     return `${d}s`;
   };
@@ -266,8 +264,8 @@ export function CountryDecadeStack({
 
   return (
     <ChartCard
-      title="不同年代的立法分布"
-      subtitle={`Top ${topCountries.length} countries by decade`}
+      title="Legislative activity by decade"
+      subtitle={`Top ${topCountries.length} countries, stacked by decade`}
     >
       <ResponsiveContainer>
         <BarChart

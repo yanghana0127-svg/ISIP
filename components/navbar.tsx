@@ -12,12 +12,15 @@ export function Navbar() {
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-navy-mid to-navy-soft text-white shadow-sm">
             <Compass className="h-4 w-4" />
           </span>
-          <span className="text-gradient-navy">投资审查智能平台</span>
+          <span className="text-gradient-navy">ISIP</span>
+          <span className="hidden text-xs font-normal text-navy-mid/60 md:inline">
+            Investment Screening Intelligence Platform
+          </span>
         </Link>
         <nav className="ml-auto flex items-center gap-1 text-sm">
-          <NavLink href="/">首页</NavLink>
-          <NavLink href="/policies">政策检索</NavLink>
-          <NavLink href="/chat">AI 顾问</NavLink>
+          <NavLink href="/">Home</NavLink>
+          <NavLink href="/policies">Policies</NavLink>
+          <NavLink href="/chat">AI Advisor</NavLink>
         </nav>
       </div>
     </header>
