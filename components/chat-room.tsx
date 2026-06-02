@@ -217,8 +217,8 @@ export function ChatRoom({
                   <Sparkles className="h-4 w-4" />
                 </span>
                 <div className="text-sm leading-relaxed text-white/85">
-                  Hi! I'm the AI Advisor. Ask about any FDI screening
-                  topic — I'll ground my answer in the 141 statutes
+                  Hi! I&apos;m the AI Advisor. Ask about any FDI screening
+                  topic — I&apos;ll ground my answer in the 141 statutes
                   (<strong className="text-white">Policy</strong> mode), live news
                   (<strong className="text-white">Web</strong>), or both
                   (<strong className="text-white">Deep Research</strong>),
