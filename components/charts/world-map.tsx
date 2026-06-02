@@ -88,7 +88,11 @@ export function WorldMap({
 
   return (
     <div className="glass-dark relative overflow-hidden rounded-3xl p-5 text-white">
-      <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+      {/* hero-style gradient wash */}
+      <div className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-gradient-to-br from-[#7c5cff] to-[#576cbc] opacity-40 blur-3xl" />
+      <div className="pointer-events-none absolute -right-28 bottom-0 h-96 w-96 rounded-full bg-gradient-to-br from-[#5ad7e8] to-[#19376d] opacity-35 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/3 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-gradient-to-br from-[#576cbc] to-[#19376d] opacity-25 blur-3xl" />
+      <div className="relative mb-3 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h3 className="text-base font-bold text-white">
             Where the world screens foreign investment
@@ -125,7 +129,7 @@ export function WorldMap({
         </div>
       </div>
 
-      <div className="h-[420px] w-full">
+      <div className="relative h-[420px] w-full">
         {mounted && features ? (
           <ResponsiveChoropleth
             data={data}
@@ -165,7 +169,7 @@ export function WorldMap({
       </div>
 
       {metric === "cumulative" && (
-        <div className="mt-2 flex items-center gap-3">
+        <div className="relative mt-2 flex items-center gap-3">
           <button
             onClick={() => {
               if (year >= yearlyRange[1]) setYear(yearlyRange[0]);

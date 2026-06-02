@@ -6,13 +6,13 @@ import { PolicyCard } from "@/components/policy-card";
 import { IndustryDonut, StrictnessTrend } from "@/components/charts/country-mini";
 import { CountryRadar } from "@/components/charts/country-radar";
 import { PolicyTimelineArea } from "@/components/charts/industry-charts";
+import { ContextChat } from "@/components/context-chat";
 import {
-  ArrowLeft,
-  MessageSquare,
   Shield,
   Gauge,
   Building2,
   CalendarClock,
+  ArrowLeft,
 } from "lucide-react";
 
 export async function generateStaticParams() {
@@ -213,12 +213,7 @@ export default async function CountryPage({
             Grounded in {profile.name}&apos;s statutes, ISM data and live web.
           </p>
         </div>
-        <Link
-          href={`/chat?country=${profile.slug}`}
-          className="glass-primary inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
-        >
-          <MessageSquare className="h-4 w-4" /> Ask in this context
-        </Link>
+        <ContextChat country={profile.slug} name={profile.name} />
       </section>
 
       {/* policies */}

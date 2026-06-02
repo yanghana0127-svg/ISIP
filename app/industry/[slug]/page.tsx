@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getIndustry, getPoliciesByIndustry, getIndustries } from "@/lib/data";
 import { PolicyCard } from "@/components/policy-card";
-import { ArrowLeft, MessageSquare, Sparkles, BarChart3 } from "lucide-react";
+import { ContextChat } from "@/components/context-chat";
+import { ArrowLeft, Sparkles, BarChart3 } from "lucide-react";
 import {
   CountryPolicyCountBar,
   PolicyTimelineArea,
@@ -111,12 +112,7 @@ export default async function IndustryPage({
             {ind.name_en}?”
           </p>
         </div>
-        <Link
-          href={`/chat?industry=${ind.slug}`}
-          className="glass-primary inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
-        >
-          <MessageSquare className="h-4 w-4" /> Ask in this context
-        </Link>
+        <ContextChat industry={ind.slug} name={ind.name_en} />
       </section>
 
       {/* policies by country */}

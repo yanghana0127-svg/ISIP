@@ -52,11 +52,42 @@ export function StrictnessRank({
             margin={{ top: 4, right: 30, bottom: 30, left: 110 }}
             padding={0.28}
             valueScale={{ type: "linear" }}
-            colors={(d) =>
-              (d.data as { slug: string }).slug === highlightSlug
-                ? "#5ad7e8"
-                : "#3a5391"
-            }
+            colors="#3a5391"
+            defs={[
+              {
+                id: "barNavy",
+                type: "linearGradient",
+                x1: 0,
+                y1: 0,
+                x2: 1,
+                y2: 0,
+                colors: [
+                  { offset: 0, color: "#aebfe2" },
+                  { offset: 55, color: "#4a63a8" },
+                  { offset: 100, color: "#0b2447" },
+                ],
+              },
+              {
+                id: "barCyan",
+                type: "linearGradient",
+                x1: 0,
+                y1: 0,
+                x2: 1,
+                y2: 0,
+                colors: [
+                  { offset: 0, color: "#bdf0f7" },
+                  { offset: 100, color: "#1f6f8b" },
+                ],
+              },
+            ]}
+            fill={[
+              {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                match: (bar: any) => bar?.data?.slug === highlightSlug,
+                id: "barCyan",
+              },
+              { match: "*", id: "barNavy" },
+            ]}
             borderRadius={3}
             axisBottom={{ tickValues: 5 }}
             axisLeft={{ tickSize: 0, tickPadding: 6 }}
