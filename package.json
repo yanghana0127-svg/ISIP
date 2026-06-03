@@ -16,6 +16,7 @@
     "@nivo/line": "^0.99.0",
     "@nivo/network": "^0.99.0",
     "@nivo/radar": "^0.99.0",
+    "@vercel/analytics": "^2.0.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.460.0",
     "minisearch": "^7.2.0",
