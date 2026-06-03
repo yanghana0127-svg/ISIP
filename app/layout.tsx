@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "ISIP — Investment Screening Intelligence Platform",
@@ -27,6 +28,7 @@ export default function RootLayout({
         <footer className="mx-auto mt-12 max-w-7xl px-4 pb-10 text-center text-xs text-navy-mid/60">
           Investment Screening Intelligence Platform · ISIP · 2026
         </footer>
+        <Analytics />
       </body>
     </html>
   );
