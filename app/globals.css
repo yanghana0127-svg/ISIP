@@ -254,9 +254,9 @@ body {
       /* cyan orb bottom-right */
       radial-gradient(55% 45% at 88% 92%, rgba(90,215,232,0.30) 0%, transparent 60%),
       /* soft navy-mid wash */
-      radial-gradient(70% 60% at 50% 50%, rgba(87,108,188,0.18) 0%, transparent 75%),
-      /* base — same dark navy as Hero */
-      linear-gradient(135deg, #0b2447 0%, #19376d 100%);
+      radial-gradient(70% 60% at 50% 50%, rgba(87,108,188,0.20) 0%, transparent 75%),
+      /* base — deep navy, a touch above the hero for a premium feel */
+      linear-gradient(135deg, #0e2c52 0%, #1c3d6e 100%);
     background-attachment: fixed;
   }
   @keyframes shimmer {

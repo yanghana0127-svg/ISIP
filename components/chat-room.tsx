@@ -283,7 +283,7 @@ export function ChatRoom({
               }}
               placeholder="Ask anything about global FDI screening…"
               rows={2}
-              className="block min-h-[52px] w-full resize-none border-0 bg-transparent text-base text-white placeholder:text-white/40 outline-none"
+              className="block max-h-[50vh] min-h-[52px] w-full resize-y border-0 bg-transparent text-base text-white placeholder:text-white/40 outline-none"
             />
 
             <div className="mt-3 flex items-center gap-3">
