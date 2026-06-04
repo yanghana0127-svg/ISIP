@@ -4,23 +4,25 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Compass } from "lucide-react";
 
+// Compare lives under /countries (reachable from that page) so it's not a
+// top-level item. AI Advisor is the flagship → a distinct CTA on the right.
 const LINKS = [
   { href: "/", label: "Home" },
   { href: "/countries", label: "Countries" },
-  { href: "/countries/compare", label: "Compare" },
   { href: "/policies", label: "Policies" },
   { href: "/news", label: "News" },
-  { href: "/chat", label: "AI Advisor" },
+  { href: "/guide", label: "Guide" },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const chatActive = pathname.startsWith("/chat");
 
   return (
     <header className="sticky top-3 z-40 mx-auto mt-3 max-w-7xl px-4">
-      <div className="glass flex h-14 items-center gap-4 rounded-2xl px-5">
+      <div className="glass flex h-14 items-center gap-3 rounded-2xl px-5">
         <Link
           href="/"
           className="flex items-center gap-2 font-semibold tracking-tight text-navy-dark"
@@ -33,13 +35,10 @@ export function Navbar() {
             Investment Screening Intelligence Platform
           </span>
         </Link>
+
         <nav className="ml-auto flex items-center gap-0.5 text-sm">
           {LINKS.map((l) => {
-            // "Compare" is nested under /countries; only it should match exactly
-            const active =
-              l.href === "/countries"
-                ? pathname === "/countries"
-                : isActive(l.href);
+            const active = isActive(l.href);
             return (
               <Link
                 key={l.href}
@@ -59,6 +58,17 @@ export function Navbar() {
             );
           })}
         </nav>
+
+        {/* flagship CTA — frosted glass */}
+        <Link
+          href="/chat"
+          aria-current={chatActive ? "page" : undefined}
+          className={`glass-cta ml-1 inline-flex items-center rounded-xl px-4 py-1.5 text-sm font-semibold tracking-tight ${
+            chatActive ? "ring-2 ring-navy-light/60" : ""
+          }`}
+        >
+          AI Advisor
+        </Link>
       </div>
     </header>
   );
