@@ -89,9 +89,12 @@ const MODES: { id: Mode; label: string; icon: React.ReactNode; hint: string }[] 
 export function ChatRoom({
   industry,
   country,
+  compact = false,
 }: {
   industry?: string;
   country?: string;
+  // compact = single-column layout for the narrow floating popout window
+  compact?: boolean;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -213,10 +216,18 @@ export function ChatRoom({
     .find((m) => m.role === "assistant");
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+    <div
+      className={
+        compact
+          ? "flex h-full flex-col gap-3"
+          : "grid gap-4 lg:grid-cols-[1fr_320px]"
+      }
+    >
       {/* Main column: composer pinned on top, messages scroll below — one card */}
       <div
-        className="flex flex-col overflow-hidden rounded-2xl border border-white/15"
+        className={`flex flex-col overflow-hidden rounded-2xl border border-white/15 ${
+          compact ? "min-h-0 flex-1" : ""
+        }`}
         style={{
           background: "rgba(255,255,255,0.04)",
           backdropFilter: "blur(14px)",
@@ -297,8 +308,10 @@ export function ChatRoom({
         {/* messages scroll area below the composer */}
         <div
           ref={scrollRef}
-          className="min-h-[420px] flex-1 space-y-4 overflow-y-auto p-5"
-          style={{ maxHeight: "60vh" }}
+          className={`flex-1 space-y-4 overflow-y-auto p-5 ${
+            compact ? "min-h-[200px]" : "min-h-[420px]"
+          }`}
+          style={{ maxHeight: compact ? "100%" : "60vh" }}
         >
           {messages.length === 0 && (
             <div className="space-y-5">
@@ -350,7 +363,11 @@ export function ChatRoom({
 
       {/* Sidebar: sources — dark glass */}
       <aside
-        className="max-h-[78vh] min-h-[200px] overflow-y-auto rounded-2xl border border-white/15 p-5"
+        className={`overflow-y-auto rounded-2xl border border-white/15 p-5 ${
+          compact
+            ? "max-h-[32vh] shrink-0"
+            : "max-h-[78vh] min-h-[200px]"
+        }`}
         style={{
           background: "rgba(255,255,255,0.04)",
           backdropFilter: "blur(14px)",

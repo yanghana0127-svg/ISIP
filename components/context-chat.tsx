@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MessageSquare, X } from "lucide-react";
+import { MessageSquare, X, Minus } from "lucide-react";
 import { ChatRoom } from "@/components/chat-room";
 
-// "Ask in this context" that opens the AI Advisor over the current page
-// (no navigation) with the country / industry pre-loaded as context.
+// "Ask in this context" → opens the AI Advisor as a floating window docked to
+// the bottom-right of the page (like a chat widget), so the user never leaves
+// the current country / industry page. Minimisable, not a full-page takeover.
 export function ContextChat({
   country,
   industry,
@@ -18,62 +19,81 @@ export function ContextChat({
   label?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Keep the chat mounted once opened (preserve conversation) but allow hiding.
+  useEffect(() => {
+    if (open) setMounted(true);
+  }, [open]);
 
   useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => setOpen((v) => !v)}
         className="glass-primary inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
       >
         <MessageSquare className="h-4 w-4" /> {label}
       </button>
 
-      {open && (
+      {mounted && (
         <div
-          className="fixed inset-0 z-50 flex items-stretch justify-end"
+          className={`fixed bottom-4 right-4 z-50 flex flex-col overflow-hidden rounded-2xl border border-white/15 shadow-2xl transition-all duration-300 ${
+            open
+              ? "pointer-events-auto translate-y-0 opacity-100"
+              : "pointer-events-none translate-y-4 opacity-0"
+          }`}
+          style={{
+            width: "min(92vw, 430px)",
+            height: "min(82vh, 660px)",
+          }}
           role="dialog"
-          aria-modal="true"
+          aria-modal="false"
+          aria-hidden={!open}
         >
-          {/* backdrop */}
-          <button
-            aria-label="Close"
-            onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-navy-dark/50 backdrop-blur-sm"
-          />
+          <div aria-hidden className="bg-chat-metal absolute inset-0" />
 
-          {/* slide-over panel */}
-          <div className="relative flex h-full w-full max-w-5xl flex-col overflow-hidden shadow-2xl animate-[slidein_.25s_ease-out]">
-            <div aria-hidden className="bg-chat-metal absolute inset-0" />
-            <div className="relative z-10 flex items-center justify-between border-b border-white/10 px-5 py-4 text-white">
-              <div>
-                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-white/55">
-                  <MessageSquare className="h-3.5 w-3.5" /> AI Advisor
-                </div>
-                <div className="text-lg font-bold">{name} · in context</div>
+          {/* header */}
+          <div className="relative z-10 flex items-center justify-between border-b border-white/10 px-4 py-3 text-white">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-white/55">
+                <MessageSquare className="h-3 w-3" /> AI Advisor
               </div>
+              <div className="truncate text-sm font-bold">
+                {name} · in context
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
               <button
                 onClick={() => setOpen(false)}
-                className="grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+                className="grid h-8 w-8 place-items-center rounded-full text-white/70 transition hover:bg-white/10 hover:text-white"
+                aria-label="Minimise"
+                title="Minimise"
+              >
+                <Minus className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  setMounted(false);
+                }}
+                className="grid h-8 w-8 place-items-center rounded-full text-white/70 transition hover:bg-white/10 hover:text-white"
                 aria-label="Close"
+                title="Close"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="relative z-10 flex-1 overflow-y-auto p-5 text-white">
-              <ChatRoom country={country} industry={industry} />
-            </div>
+          </div>
+
+          {/* chat body */}
+          <div className="relative z-10 min-h-0 flex-1 p-3 text-white">
+            <ChatRoom country={country} industry={industry} compact />
           </div>
         </div>
       )}
