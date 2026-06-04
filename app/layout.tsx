@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
   title: "ISIP — Investment Screening Intelligence Platform",
   description:
-    "Search foreign investment screening policies, cases and an AI advisor across 34 countries and 141 legal documents.",
+    "Search foreign investment screening laws, compare regimes and ask an AI advisor — grounded in screening statutes and the PRISM ISM dataset.",
 };
 
 export default function RootLayout({
@@ -24,9 +25,7 @@ export default function RootLayout({
 
         <Navbar />
         <main className="mx-auto w-full max-w-7xl px-4 py-8">{children}</main>
-        <footer className="mx-auto mt-12 max-w-7xl px-4 pb-10 text-center text-xs text-navy-mid/60">
-          Investment Screening Intelligence Platform · ISIP · 2026
-        </footer>
+        <Footer />
       </body>
     </html>
   );

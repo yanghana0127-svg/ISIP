@@ -3,7 +3,8 @@
 import { useMemo } from "react";
 import { ResponsiveBar } from "@nivo/bar";
 import type { ISMCountry } from "@/lib/types";
-import { useMounted, nivoTheme } from "./nivo-shared";
+import { useMounted, nivoTheme , ChartSkeleton } from "./nivo-shared";
+import { StrictnessInfo } from "@/components/strictness-info";
 
 // Top countries by the Screening Strictness Index.
 export function StrictnessRank({
@@ -34,14 +35,15 @@ export function StrictnessRank({
   return (
     <div className="glass rounded-2xl p-5">
       <div className="mb-3">
-        <h3 className="text-sm font-bold text-navy-dark">
+        <h3 className="flex items-center gap-1.5 text-sm font-bold text-navy-dark">
           Screening Strictness Index
+          <StrictnessInfo />
         </h3>
         <p className="text-xs text-navy-mid/70">
           0–100 composite of mechanism features + sector breadth · top {topN}
         </p>
       </div>
-      <div className="h-[460px] w-full">
+      <div className="h-[360px] w-full sm:h-[460px]">
         {mounted && data.length > 0 ? (
           <ResponsiveBar
             data={data}
@@ -98,9 +100,7 @@ export function StrictnessRank({
             labelTextColor="#ffffff"
           />
         ) : (
-          <div className="grid h-full place-items-center text-sm text-navy-mid/50">
-            Loading…
-          </div>
+          <ChartSkeleton />
         )}
       </div>
     </div>

@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { ResponsiveHeatMap } from "@nivo/heatmap";
 import type { ISMCountry } from "@/lib/types";
-import { useMounted, nivoTheme } from "./nivo-shared";
+import { useMounted, nivoTheme, NAVY_SEQ, ChartSkeleton } from "./nivo-shared";
 
 // Country × sector-group coverage matrix (the analytical centerpiece).
 export function CoverageHeatmap({
@@ -27,6 +27,11 @@ export function CoverageHeatmap({
     }));
   }, [countries, groups, topN]);
 
+  const maxVal = useMemo(
+    () => Math.max(1, ...data.flatMap((r) => r.data.map((d) => d.y))),
+    [data],
+  );
+
   return (
     <div className="glass rounded-2xl p-5">
       <div className="mb-3">
@@ -38,7 +43,7 @@ export function CoverageHeatmap({
           countries by breadth
         </p>
       </div>
-      <div className="h-[560px] w-full">
+      <div className="h-[400px] w-full sm:h-[560px]">
         {mounted && data.length > 0 ? (
           <ResponsiveHeatMap
             data={data}
@@ -51,10 +56,10 @@ export function CoverageHeatmap({
               tickRotation: -38,
             }}
             axisLeft={{ tickSize: 0, tickPadding: 6 }}
-            colors={{
-              type: "sequential",
-              scheme: "blues",
-              minValue: 0,
+            colors={(cell) => {
+              const v = (cell.value ?? 0) as number;
+              const i = Math.round((v / maxVal) * (NAVY_SEQ.length - 1));
+              return NAVY_SEQ[Math.max(0, Math.min(NAVY_SEQ.length - 1, i))];
             }}
             emptyColor="#eef2fa"
             borderColor="#ffffff"
@@ -64,9 +69,7 @@ export function CoverageHeatmap({
             animate={false}
           />
         ) : (
-          <div className="grid h-full place-items-center text-sm text-navy-mid/50">
-            Loading…
-          </div>
+          <ChartSkeleton />
         )}
       </div>
     </div>

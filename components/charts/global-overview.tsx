@@ -101,10 +101,10 @@ export function GlobalOverview({
       <div className="glass rounded-2xl p-5 lg:col-span-2">
         <div className="mb-4">
           <h3 className="text-base font-bold text-navy-dark">
-            各行业的政策覆盖
+            Policy coverage by sector
           </h3>
           <p className="text-xs text-navy-mid/70">
-            点击进入该行业查看详细对比
+            Click a sector to see the full cross-country comparison
           </p>
         </div>
         <ul className="space-y-4">

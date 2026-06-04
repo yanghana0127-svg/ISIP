@@ -8,15 +8,79 @@
     2023
   ],
   "sectorGroups": [
-    "Defense",
-    "Critical Infra",
-    "Next-Gen Infra",
-    "Critical Tech",
-    "Services",
-    "Finance",
-    "Media",
-    "Personal Data"
+    "Defense & Security",
+    "Semiconductors & Computing",
+    "Energy & Resources",
+    "Telecom & Data",
+    "Transport & Logistics",
+    "Biotech & Medical",
+    "Finance & Property"
   ],
+  "sectorMembers": {
+    "Defense & Security": [
+      "Defense Production",
+      "Controlled Dual-Use",
+      "Cyber Security",
+      "Defense Technologies",
+      "Hypersonics"
+    ],
+    "Semiconductors & Computing": [
+      "Microprocessor Technology",
+      "Advanced Computing Technology",
+      "Data Analytics Technology",
+      "Quantum Information and Sensing Technology",
+      "Artificial Intelligence and Machine Learning",
+      "Robotics",
+      "Brain-Computer Interfaces",
+      "Additive Manufacturing",
+      "Advanced Materials",
+      "Research Institutions"
+    ],
+    "Energy & Resources": [
+      "Energy Infrastructure",
+      "Water Infrastructure",
+      "Energy Storage",
+      "Civil Nuclear",
+      "Mineral Resources",
+      "Critical Supplies"
+    ],
+    "Telecom & Data": [
+      "Telecommunications Infrastructure",
+      "Sensitive Personal Data",
+      "Advanced Surveillance Technologies"
+    ],
+    "Transport & Logistics": [
+      "Transportation Infrastructure",
+      "Logistics Technology",
+      "Space"
+    ],
+    "Biotech & Medical": [
+      "Healthcare Infrastructure",
+      "Agriculture/Food Security",
+      "Biotechology"
+    ],
+    "Finance & Property": [
+      "Finance",
+      "Media",
+      "Education and Training",
+      "Gambling",
+      "Tourism"
+    ]
+  },
+  "featureLabels": {
+    "notification": "Mandatory notification",
+    "preapproval": "Pre-approval required",
+    "callIn": "Formal call-in power",
+    "nsTest": "National-security / public-order test",
+    "netBenefit": "Net-benefit test",
+    "competition": "Competition test",
+    "reviewIncrease": "Reviews ownership increases",
+    "greenfield": "Covers greenfield",
+    "realEstate": "Covers real estate",
+    "mitigation": "Mitigation agreements",
+    "fines": "Fines for non-compliance",
+    "enhancedGovControl": "Enhanced gov't-control review"
+  },
   "countryCount": 38,
   "strictness": {
     "weights": {

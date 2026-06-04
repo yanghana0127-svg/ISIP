@@ -13,6 +13,8 @@ import {
   BookOpen,
   Globe,
   Layers3,
+  AlertCircle,
+  RotateCcw,
 } from "lucide-react";
 
 type Mode = "policy" | "web" | "deep";
@@ -55,7 +57,23 @@ type Message = {
   policySources?: PolicySource[];
   ismSources?: ISMSource[];
   webSources?: WebSource[];
+  error?: string;
 };
+
+// Turn raw upstream errors into a short, human message. The Zhipu/GLM API
+// returns 429 + code 1302 when the account hits its rate limit.
+function friendlyError(raw: string): string {
+  if (/\b429\b|1302|rate limit|速率限制|频率/i.test(raw)) {
+    return "The model API is rate-limited right now. Wait a few seconds and retry.";
+  }
+  if (/\b50[023]\b|timeout|ETIMEDOUT|fetch failed|network/i.test(raw)) {
+    return "Couldn't reach the model service. Check your connection and retry.";
+  }
+  if (/ZHIPU_API_KEY|TAVILY_API_KEY|not set/i.test(raw)) {
+    return "The service isn't fully configured (missing API key).";
+  }
+  return "Something went wrong generating the answer. Please retry.";
+}
 
 const SUGGESTIONS = [
   "How do US and EU screening thresholds differ for Chinese buyers?",
@@ -109,10 +127,10 @@ export function ChatRoom({
     });
   }, [messages]);
 
-  async function send(text: string) {
+  async function send(text: string, base: Message[] = messages) {
     if (!text.trim() || loading) return;
     const userMsg: Message = { role: "user", content: text };
-    const next = [...messages, userMsg];
+    const next = [...base, userMsg];
     setMessages(next);
     setInput("");
     setLoading(true);
@@ -193,17 +211,27 @@ export function ChatRoom({
         }
       }
     } catch (e) {
+      const error = friendlyError(String(e));
       setMessages((m) => {
         const copy = [...m];
-        copy[copy.length - 1] = {
-          role: "assistant",
-          content: `Error: ${String(e)}`,
-        };
+        copy[copy.length - 1] = { role: "assistant", content: "", error };
         return copy;
       });
     } finally {
       setLoading(false);
     }
+  }
+
+  function retryLast() {
+    if (loading) return;
+    let base = [...messages];
+    if (base[base.length - 1]?.role === "assistant") base = base.slice(0, -1);
+    let text = "";
+    if (base[base.length - 1]?.role === "user") {
+      text = base[base.length - 1].content;
+      base = base.slice(0, -1);
+    }
+    if (text) void send(text, base);
   }
 
   function onSubmit(e: FormEvent) {
@@ -356,6 +384,7 @@ export function ChatRoom({
               key={i}
               msg={m}
               streaming={loading && i === messages.length - 1}
+              onRetry={retryLast}
             />
           ))}
         </div>
@@ -393,9 +422,11 @@ export function ChatRoom({
 function MessageBubble({
   msg,
   streaming,
+  onRetry,
 }: {
   msg: Message;
   streaming?: boolean;
+  onRetry?: () => void;
 }) {
   if (msg.role === "user") {
     return (
@@ -418,7 +449,22 @@ function MessageBubble({
         className="max-w-[85%] rounded-2xl rounded-tl-md border border-white/15 px-4 py-3 text-sm leading-relaxed text-white/90"
         style={{ background: "rgba(255,255,255,0.06)", backdropFilter: "blur(10px)" }}
       >
-        {msg.content ? (
+        {msg.error ? (
+          <div className="flex items-start gap-2.5">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+            <div>
+              <div className="text-white/85">{msg.error}</div>
+              {onRetry && (
+                <button
+                  onClick={onRetry}
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-white/25 bg-white/10 px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-white/20"
+                >
+                  <RotateCcw className="h-3 w-3" /> Retry
+                </button>
+              )}
+            </div>
+          </div>
+        ) : msg.content ? (
           <Markdown
             text={msg.content}
             policy={msg.policySources ?? []}
@@ -448,8 +494,18 @@ type Block =
   | { type: "heading"; level: number; text: string }
   | { type: "ul"; items: string[] }
   | { type: "ol"; items: string[] }
+  | { type: "table"; header: string[]; rows: string[][] }
   | { type: "hr" }
   | { type: "p"; text: string };
+
+function splitRow(line: string): string[] {
+  return line
+    .trim()
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map((c) => c.trim());
+}
 
 function parseBlocks(src: string): Block[] {
   const blocks: Block[] = [];
@@ -469,13 +525,40 @@ function parseBlocks(src: string): Block[] {
     }
   };
 
-  for (const raw of src.split("\n")) {
-    const line = raw.trim();
+  const lines = src.split("\n");
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li].trim();
     if (!line) {
       flushPara();
       flushList();
       continue;
     }
+
+    // GFM table: a row with pipes followed by a |---|---| delimiter line
+    const nextLine = (lines[li + 1] ?? "").trim();
+    if (
+      line.includes("|") &&
+      nextLine.includes("|") &&
+      nextLine.includes("-") &&
+      /^[\s|:-]+$/.test(nextLine)
+    ) {
+      flushPara();
+      flushList();
+      const header = splitRow(line);
+      const rows: string[][] = [];
+      li += 1; // skip delimiter
+      while (
+        li + 1 < lines.length &&
+        lines[li + 1].trim().includes("|") &&
+        lines[li + 1].trim() !== ""
+      ) {
+        rows.push(splitRow(lines[li + 1]));
+        li += 1;
+      }
+      blocks.push({ type: "table", header, rows });
+      continue;
+    }
+
     const heading = line.match(/^(#{1,4})\s+(.*)$/);
     if (heading) {
       flushPara();
@@ -678,6 +761,40 @@ function Markdown({
                 </li>
               ))}
             </ol>
+          );
+        }
+        if (b.type === "table") {
+          return (
+            <div key={i} className="my-2 overflow-x-auto">
+              <table className="w-full border-collapse text-xs">
+                <thead>
+                  <tr>
+                    {b.header.map((h, j) => (
+                      <th
+                        key={j}
+                        className="border border-white/15 bg-white/10 px-2 py-1.5 text-left font-semibold text-white"
+                      >
+                        {renderInline(h, policy, ism, web, `th${i}-${j}`)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {b.rows.map((row, ri) => (
+                    <tr key={ri}>
+                      {row.map((cell, ci) => (
+                        <td
+                          key={ci}
+                          className="border border-white/10 px-2 py-1.5 align-top text-white/85"
+                        >
+                          {renderInline(cell, policy, ism, web, `td${i}-${ri}-${ci}`)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           );
         }
         if (b.type === "hr") {

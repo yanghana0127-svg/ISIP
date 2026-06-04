@@ -7,6 +7,7 @@ import { IndustryDonut, StrictnessTrend } from "@/components/charts/country-mini
 import { CountryRadar } from "@/components/charts/country-radar";
 import { PolicyTimelineArea } from "@/components/charts/industry-charts";
 import { ContextChat } from "@/components/context-chat";
+import { StrictnessInfo } from "@/components/strictness-info";
 import {
   Shield,
   Gauge,
@@ -79,6 +80,7 @@ export default async function CountryPage({
             <div className="rounded-2xl border border-white/20 bg-white/10 px-5 py-4 text-center backdrop-blur-md">
               <div className="flex items-center justify-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-white/65">
                 <Gauge className="h-3.5 w-3.5" /> Strictness Index
+                <StrictnessInfo tone="light" />
               </div>
               <div className="mt-1 font-mono text-4xl font-bold text-white">
                 {ism.strictness.toFixed(0)}

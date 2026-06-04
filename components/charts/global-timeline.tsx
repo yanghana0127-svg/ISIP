@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { ResponsiveLine } from "@nivo/line";
 import type { ISMYearly } from "@/lib/types";
-import { useMounted, nivoTheme } from "./nivo-shared";
+import { useMounted, nivoTheme , ChartSkeleton } from "./nivo-shared";
 
 // Global wave of new screening mechanisms per year (the post-2018 / COVID surge).
 export function GlobalTimeline({
@@ -89,9 +89,7 @@ export function GlobalTimeline({
             ]}
           />
         ) : (
-          <div className="grid h-full place-items-center text-sm text-navy-mid/50">
-            Loading…
-          </div>
+          <ChartSkeleton />
         )}
       </div>
     </div>

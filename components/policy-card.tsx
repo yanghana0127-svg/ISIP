@@ -30,7 +30,7 @@ export function PolicyCard({
           </span>
         )}
         <span className="text-navy-mid/60">
-          {(policy.length / 1000).toFixed(1)}k 字符
+          {(policy.length / 1000).toFixed(1)}k chars
         </span>
       </div>
       {policy.industries.length > 0 && (

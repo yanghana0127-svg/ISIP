@@ -3,13 +3,10 @@ import {
   getIndustries,
   getStats,
   getCountries,
-  getISMCountries,
   getISMYearly,
-  getISMMeta,
 } from "@/lib/data";
 import { IndustryCard } from "@/components/industry-card";
 import { GlobalOverview } from "@/components/charts/global-overview";
-import { WorldMap } from "@/components/charts/world-map";
 import { GlobalTimeline } from "@/components/charts/global-timeline";
 import {
   Search,
@@ -23,28 +20,21 @@ import {
 } from "lucide-react";
 
 export default async function HomePage() {
-  const [industries, stats, countries, ismCountries, ismYearly, ismMeta] =
-    await Promise.all([
-      getIndustries(),
-      getStats(),
-      getCountries(),
-      getISMCountries(),
-      getISMYearly(),
-      getISMMeta(),
-    ]);
+  const [industries, stats, countries, ismYearly] = await Promise.all([
+    getIndustries(),
+    getStats(),
+    getCountries(),
+    getISMYearly(),
+  ]);
 
   return (
     <div className="space-y-12">
       {/* Hero */}
-      <section className="glass-dark relative overflow-hidden rounded-3xl px-8 py-14 text-white">
+      <section className="glass-dark relative overflow-hidden rounded-3xl px-8 py-14 text-white shadow-[0_44px_90px_-48px_rgba(11,36,71,0.5)]">
         <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-gradient-to-br from-[#7c5cff] to-[#576cbc] opacity-50 blur-3xl" />
         <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-gradient-to-br from-[#5ad7e8] to-[#19376d] opacity-40 blur-3xl" />
 
         <div className="relative max-w-3xl space-y-5">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#5ad7e8]" />
-            ISIP · Investment Screening Intelligence Platform
-          </div>
           <h1 className="text-4xl font-bold leading-tight tracking-tight md:text-6xl">
             <span className="text-metallic-light">Every FDI screening rule,</span>
             <span className="block text-metallic-light">one place, one search.</span>
@@ -60,7 +50,7 @@ export default async function HomePage() {
             <StatBadge label="sectors" value={stats.industry_count} />
             <StatBadge
               label="chars of corpus"
-              value={`${(stats.total_chars / 10000).toFixed(0)}w`}
+              value={`${(stats.total_chars / 1_000_000).toFixed(1)}M`}
             />
           </div>
           <div className="flex flex-wrap gap-3 pt-4">
@@ -80,57 +70,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* World map + global tightening wave */}
-      <section className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Globe2 className="h-4 w-4 text-navy-soft" />
-          <h2 className="text-xl font-bold text-gradient-navy">
-            The screening map
-          </h2>
-          <span className="text-xs text-navy-mid/60">
-            Drag the year, or hit play, to watch FDI screening spread worldwide
-          </span>
-        </div>
-        <WorldMap
-          countries={ismCountries}
-          yearly={ismYearly}
-          yearlyRange={ismMeta.yearlyRange}
-        />
-        <div className="grid gap-4 lg:grid-cols-2">
-          <GlobalTimeline yearly={ismYearly} />
-          <Link
-            href="/countries"
-            className="glass-soft group flex flex-col justify-center gap-2 rounded-2xl p-6 transition hover:-translate-y-0.5"
-          >
-            <span className="text-xs font-semibold uppercase tracking-wider text-navy-mid/60">
-              New · Country Atlas
-            </span>
-            <span className="text-lg font-bold text-navy-dark">
-              Explore every country&apos;s screening profile →
-            </span>
-            <span className="text-sm text-navy-mid/80">
-              Strictness Index, sector coverage, mechanism timeline and a
-              cross-country coverage heatmap — built on the PRISM ISM dataset.
-            </span>
-          </Link>
-        </div>
-      </section>
-
-      {/* Global overview charts */}
-      <section className="space-y-3">
-        <div className="flex items-center gap-2">
-          <BarChart3 className="h-4 w-4 text-navy-soft" />
-          <h2 className="text-xl font-bold text-gradient-navy">
-            Global overview
-          </h2>
-          <span className="text-xs text-navy-mid/60">
-            Who legislates most, which sectors draw the most attention
-          </span>
-        </div>
-        <GlobalOverview countries={countries} industries={industries} />
-      </section>
-
-      {/* Industries */}
+      {/* Browse by sector — the primary way in */}
       <section className="space-y-5">
         <div className="flex items-end justify-between">
           <div>
@@ -150,6 +90,52 @@ export default async function HomePage() {
           {industries.map((ind) => (
             <IndustryCard key={ind.slug} ind={ind} />
           ))}
+        </div>
+      </section>
+
+      {/* Global overview charts */}
+      <section className="space-y-3">
+        <div className="flex items-center gap-2">
+          <BarChart3 className="h-4 w-4 text-navy-soft" />
+          <h2 className="text-xl font-bold text-gradient-navy">
+            Global overview
+          </h2>
+          <span className="text-xs text-navy-mid/60">
+            Who legislates most, which sectors draw the most attention
+          </span>
+        </div>
+        <GlobalOverview countries={countries} industries={industries} />
+      </section>
+
+      {/* Global tightening wave + Country Atlas teaser */}
+      <section className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Globe2 className="h-4 w-4 text-navy-soft" />
+          <h2 className="text-xl font-bold text-gradient-navy">
+            The global tightening wave
+          </h2>
+          <span className="text-xs text-navy-mid/60">
+            New screening mechanisms per year — explore the full map in the
+            Country Atlas
+          </span>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <GlobalTimeline yearly={ismYearly} />
+          <Link
+            href="/countries"
+            className="glass-soft group flex flex-col justify-center gap-2 rounded-2xl p-6 transition hover:-translate-y-0.5"
+          >
+            <span className="text-xs font-semibold uppercase tracking-wider text-navy-mid/60">
+              Country Atlas
+            </span>
+            <span className="text-lg font-bold text-navy-dark">
+              Explore the animated world screening map →
+            </span>
+            <span className="text-sm text-navy-mid/80">
+              An animated choropleth, Strictness Index, sector-coverage heatmap
+              and mechanism timelines — built on the PRISM ISM dataset.
+            </span>
+          </Link>
         </div>
       </section>
 

@@ -68,6 +68,7 @@ export type ISMPanel = {
   established: number | null;
   groups: Record<string, number>;
   sectors: string[];
+  features: Record<string, number>;
   strictness: number;
 };
 
@@ -90,6 +91,7 @@ export type ISMCountry = {
   fiveEyes: number;
   groups: Record<string, number>;
   sectors: string[];
+  features: Record<string, number>;
   strictness: number;
   strictnessRank: number;
 };
@@ -98,6 +100,8 @@ export type ISMMeta = {
   yearRange: [number, number];
   yearlyRange: [number, number];
   sectorGroups: string[];
+  sectorMembers: Record<string, string[]>;
+  featureLabels: Record<string, string>;
   countryCount: number;
   strictness: { weights: Record<string, number>; max: number; note: string };
 };

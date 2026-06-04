@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { ResponsiveRadar } from "@nivo/radar";
 import type { ISMCountry } from "@/lib/types";
-import { useMounted, nivoTheme } from "./nivo-shared";
+import { useMounted, nivoTheme , ChartSkeleton } from "./nivo-shared";
 
 // Country sector-coverage profile vs the OECD average across the 8 groups.
 export function CountryRadar({
@@ -70,9 +70,7 @@ export function CountryRadar({
             ]}
           />
         ) : (
-          <div className="grid h-full place-items-center text-sm text-navy-mid/50">
-            Loading…
-          </div>
+          <ChartSkeleton />
         )}
       </div>
     </div>

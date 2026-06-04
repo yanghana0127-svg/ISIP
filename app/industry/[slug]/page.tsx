@@ -1,15 +1,21 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getIndustry, getPoliciesByIndustry, getIndustries } from "@/lib/data";
+import {
+  getIndustry,
+  getPoliciesByIndustry,
+  getIndustries,
+  getISMCountries,
+  getISMMeta,
+} from "@/lib/data";
 import { PolicyCard } from "@/components/policy-card";
 import { ContextChat } from "@/components/context-chat";
 import { ArrowLeft, Sparkles, BarChart3 } from "lucide-react";
 import {
   CountryPolicyCountBar,
   PolicyTimelineArea,
-  FormatPie,
   CountryDecadeStack,
 } from "@/components/charts/industry-charts";
+import { SubsectorScreening } from "@/components/charts/subsector-screening";
 
 export async function generateStaticParams() {
   const all = await getIndustries();
@@ -24,7 +30,21 @@ export default async function IndustryPage({
   const ind = await getIndustry(params.slug);
   if (!ind) notFound();
 
-  const policies = await getPoliciesByIndustry(params.slug);
+  const [policies, ismCountries, ismMeta] = await Promise.all([
+    getPoliciesByIndustry(params.slug),
+    getISMCountries(),
+    getISMMeta(),
+  ]);
+
+  // Within this sector, how many ISM countries screen each sub-sector.
+  const members = ismMeta.sectorMembers[ind.name_en] ?? [];
+  const subsectorData = members
+    .map((label) => ({
+      label,
+      count: ismCountries.filter((c) => c.sectors.includes(label)).length,
+    }))
+    .filter((d) => d.count > 0)
+    .sort((a, b) => b.count - a.count);
 
   const byCountry: Record<string, typeof policies> = {};
   for (const p of policies) {
@@ -94,7 +114,10 @@ export default async function IndustryPage({
           <CountryPolicyCountBar policies={policies} topN={12} />
           <PolicyTimelineArea policies={policies} />
           <CountryDecadeStack policies={policies} topN={8} />
-          <FormatPie policies={policies} />
+          <SubsectorScreening
+            data={subsectorData}
+            total={ismCountries.length}
+          />
         </div>
       </section>
 

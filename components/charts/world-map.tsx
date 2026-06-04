@@ -4,7 +4,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ResponsiveChoropleth } from "@nivo/geo";
 import { Play, Pause } from "lucide-react";
 import type { ISMCountry, ISMYearly } from "@/lib/types";
-import { useMounted, nivoTheme, NAVY_RAMP } from "./nivo-shared";
+import {
+  useMounted,
+  nivoTheme,
+  NAVY_RAMP,
+  TEAL_RAMP,
+  rampGradient,
+  ChartSkeleton,
+} from "./nivo-shared";
 
 type Metric = "cumulative" | "strictness";
 
@@ -86,6 +93,8 @@ export function WorldMap({
     return Math.max(4, ...Array.from(cum.values()));
   }, [metric, yearly]);
 
+  const ramp = metric === "strictness" ? TEAL_RAMP : NAVY_RAMP;
+
   return (
     <div className="glass-dark relative overflow-hidden rounded-3xl p-5 text-white">
       {/* hero-style gradient wash */}
@@ -129,13 +138,13 @@ export function WorldMap({
         </div>
       </div>
 
-      <div className="relative h-[420px] w-full">
+      <div className="relative h-[320px] w-full sm:h-[420px]">
         {mounted && features ? (
           <ResponsiveChoropleth
             data={data}
             features={features}
             theme={nivoTheme}
-            colors={NAVY_RAMP}
+            colors={ramp}
             domain={[0, domainMax]}
             unknownColor="rgba(255,255,255,0.08)"
             valueFormat=".0f"
@@ -162,10 +171,24 @@ export function WorldMap({
             }}
           />
         ) : (
-          <div className="grid h-full place-items-center text-sm text-white/50">
-            Loading world map…
-          </div>
+          <ChartSkeleton />
         )}
+      </div>
+
+      {/* continuous color legend */}
+      <div className="relative mt-3 flex items-center gap-3">
+        <span className="text-[11px] text-white/60">
+          {metric === "strictness" ? "Strictness 0" : "0"}
+        </span>
+        <div
+          className="h-2 flex-1 rounded-full"
+          style={{ background: rampGradient(ramp) }}
+        />
+        <span className="text-[11px] text-white/60">
+          {metric === "strictness"
+            ? "100"
+            : `${domainMax} mechanisms`}
+        </span>
       </div>
 
       {metric === "cumulative" && (
